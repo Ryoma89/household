@@ -50,7 +50,7 @@ const Transaction = () => {
   }
 
   return (
-    <div className="p-10">
+    <section className="p-10">
       <Title title="Transaction" />
       <div className="mt-10 flex items-center">
         <Button type="submit" className="w-full bg-blue rounded-r-none">
@@ -160,12 +160,12 @@ const Transaction = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-mainColor hover:bg-red">
+          <Button type="submit" className="w-full bg-mainColor hover:bg-subColor">
             Submit
           </Button>
         </form>
       </Form>
-    </div>
+    </section>
   );
 };
 

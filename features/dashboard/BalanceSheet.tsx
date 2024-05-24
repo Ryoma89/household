@@ -4,10 +4,10 @@ import React from 'react'
 
 const BalanceSheet = () => {
   return (
-    <div>
+    <section className='p-10'>
       <Title title='BalanceSheet' />
       <BalanceCard />
-    </div>
+    </section>
   )
 }
 

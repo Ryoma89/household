@@ -1,14 +1,19 @@
-import React from 'react'
+import Link from "next/link";
+import React from "react";
 
 const Nav = () => {
   return (
-    <nav className='p-5 border-b border-black'>
-      <ul className='flex justify-center items-center'>
-        <li className='mr-4 text-xl'>Dashboard</li>
-        <li className='text-xl'>Chart</li>
+    <nav className="p-5 border-b border-black">
+      <ul className="flex justify-center items-center">
+        <Link href="/dashboard">
+          <li className="mr-4 text-xl hover:opacity-50">Dashboard</li>
+        </Link>
+        <Link href="/chart">
+          <li className="text-xl hover:opacity-50">Chart</li>
+        </Link>
       </ul>
     </nav>
-  )
-}
+  );
+};
 
-export default Nav
+export default Nav;
