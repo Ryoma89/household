@@ -33,6 +33,30 @@ const DashboardList = () => {
             <TableCell className="w-2/5">restaurant</TableCell>
           </TableRow>
         </TableBody>
+        <TableBody>
+          <TableRow>
+            <TableCell className="font-medium">2024-01-01</TableCell>
+            <TableCell>Food</TableCell>
+            <TableCell>¥100</TableCell>
+            <TableCell className="w-2/5">restaurant</TableCell>
+          </TableRow>
+        </TableBody>
+        <TableBody>
+          <TableRow>
+            <TableCell className="font-medium">2024-01-01</TableCell>
+            <TableCell>Food</TableCell>
+            <TableCell>¥100</TableCell>
+            <TableCell className="w-2/5">restaurant</TableCell>
+          </TableRow>
+        </TableBody>
+        <TableBody>
+          <TableRow>
+            <TableCell className="font-medium">2024-01-01</TableCell>
+            <TableCell>Food</TableCell>
+            <TableCell>¥100</TableCell>
+            <TableCell className="w-2/5">restaurant</TableCell>
+          </TableRow>
+        </TableBody>
       </Table>
       </div>
     </section>

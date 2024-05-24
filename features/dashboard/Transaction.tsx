@@ -23,12 +23,22 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils"; // クラス名のユーティリティ関数をインポート
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
   date: z.date().optional(),
   category: z.string().min(2).max(50),
+  amount: z.number(),
+  type: z.string(),
+  content: z.string().max(50),
 });
 
 const Transaction = () => {
@@ -52,16 +62,32 @@ const Transaction = () => {
   return (
     <section className="p-10">
       <Title title="Transaction" />
-      <div className="mt-10 flex items-center">
-        <Button type="submit" className="w-full bg-blue rounded-r-none">
-          Income
-        </Button>
-        <Button type="submit" className="w-full bg-red rounded-l-none">
-          Expense
-        </Button>
-      </div>
+      <div className="mt-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-5">
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-4">
+                <FormLabel className="min-w-[80px] text-lg text-bold">
+                  Type
+                </FormLabel>
+                <FormControl>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Income or Expense" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Income</SelectItem>
+                      <SelectItem value="dark">Expense</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="date"
@@ -122,7 +148,7 @@ const Transaction = () => {
           />
           <FormField
             control={form.control}
-            name="username"
+            name="amount"
             render={({ field }) => (
               <FormItem className="flex items-center space-x-4">
                 <FormLabel className="min-w-[80px] text-lg text-bold">
@@ -133,6 +159,7 @@ const Transaction = () => {
                     placeholder="Enter amount"
                     {...field}
                     className="mt-0"
+                    type="number"
                   />
                 </FormControl>
                 {/* <FormDescription>
@@ -144,7 +171,7 @@ const Transaction = () => {
           />
           <FormField
             control={form.control}
-            name="username"
+            name="content"
             render={({ field }) => (
               <FormItem className="flex items-center space-x-4">
                 <FormLabel className="min-w-[80px] text-lg text-bold">
@@ -160,11 +187,15 @@ const Transaction = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-mainColor hover:bg-subColor">
+          <Button
+            type="submit"
+            className="w-full bg-mainColor hover:bg-subColor"
+          >
             Submit
           </Button>
         </form>
       </Form>
+      </div>
     </section>
   );
 };
