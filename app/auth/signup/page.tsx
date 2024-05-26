@@ -3,7 +3,8 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { redirect } from 'next/navigation'
 
 import type { Database } from '@/lib/database.types'
-import Signup from '@/features/home/SignUP'
+import Signup from '@/features/home/SignUp'
+
 
 // サインアップページ
 const SignupPage = async () => {
