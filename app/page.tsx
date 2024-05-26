@@ -1,7 +1,20 @@
 import HomeContent from "@/features/home/HomeContent";
-export default function Home() {
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers' 
+import type { Database } from '@/lib/database.types'
+export default async function Home() {
+  const supabase = createServerComponentClient<Database>({
+    cookies,
+  })
+
+  // セッションの取得
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  
   return (
     <main>
+      {session ? <div>ログイン済</div> : <div>未ログイン</div>}
     <HomeContent />
     </main>
   );

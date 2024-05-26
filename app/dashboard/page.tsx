@@ -4,8 +4,8 @@ import DashboardList from "@/features/dashboard/DashboardList"
 import BalanceSheet from "@/features/dashboard/BalanceSheet"
 import Nav from "../components/layouts/Nav"
 
+const DashboardPage = async () => {
 
-const HomePage = () => {
   return (
     <>
     <Nav />
@@ -21,4 +21,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default DashboardPage
