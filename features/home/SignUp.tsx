@@ -1,107 +1,152 @@
-"use client";
-import { useState } from "react";
-import { supabase } from "../../utils/supabase";
-import Title from "@/app/components/elements/Title";
-import { redirect } from "next/navigation";
-import { useRouter } from "next/navigation";
+'use client'
 
-const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+import { useState } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import Loading from '@/app/loading'
+import * as z from 'zod'
+import type { Database } from '@/lib/database.types'
+type Schema = z.infer<typeof schema>
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError("Please enter valid email and password.");
-      return;
+// 入力データの検証ルールを定義
+const schema = z.object({
+  name: z.string().min(2, { message: '2文字以上入力する必要があります。' }),
+  email: z.string().email({ message: 'メールアドレスの形式ではありません。' }),
+  password: z.string().min(6, { message: '6文字以上入力する必要があります。' }),
+})
+
+// サインアップ
+const Signup = () => {
+  const router = useRouter()
+  const supabase = createClientComponentClient<Database>()
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    // 初期値
+    defaultValues: { name: '', email: '', password: '' },
+    // 入力値の検証
+    resolver: zodResolver(schema),
+  })
+
+  // 送信
+  const onSubmit: SubmitHandler<Schema> = async (data) => {
+    setLoading(true)
+
+    try {
+      // サインアップ
+      const { error: errorSignup } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
+        },
+      })
+
+      // エラーチェック
+      if (errorSignup) {
+        setMessage('エラーが発生しました。' + errorSignup.message)
+        return
+      }
+
+      // プロフィールの名前を更新
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ name: data.name })
+        .eq('email', data.email)
+
+      // エラーチェック
+      if (updateError) {
+        setMessage('エラーが発生しました。' + updateError.message)
+        return
+      }
+
+      // 入力フォームクリア
+      reset()
+      setMessage(
+        '本登録用のURLを記載したメールを送信しました。メールをご確認の上、メール本文中のURLをクリックして、本登録を行ってください。'
+      )
+    } catch (error) {
+      setMessage('エラーが発生しました。' + error)
+      return
+    } finally {
+      setLoading(false)
+      router.refresh()
     }
-    console.log("emailとpassword");
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    console.log("error", error);
-
-    if (error) {
-      setError(error.message);
-    } else {
-      alert(
-        "Sign up successful. Please check your email to confirm your account."
-      );
-      router.push("/dashboard");
-    }
-  };
+  }
 
   return (
-    <section className="p-10">
-      <Title title="Sign Up" />
-      <form className="space-y-4 mt-10" onSubmit={handleSignUp}>
-        <div>
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Email
-          </label>
+    <div className="max-w-[400px] mx-auto mt-10">
+      <div className="text-center font-bold text-xl mb-10">サインアップ</div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {/* 名前 */}
+        <div className="mb-3">
+          <input
+            type="text"
+            className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
+            placeholder="名前"
+            id="name"
+            {...register('name', { required: true })}
+          />
+          <div className="my-3 text-center text-sm text-red-500">{errors.name?.message}</div>
+        </div>
+
+        {/* メールアドレス */}
+        <div className="mb-3">
           <input
             type="email"
-            name="email"
+            className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
+            placeholder="メールアドレス"
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="name@company.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email', { required: true })}
           />
+          <div className="my-3 text-center text-sm text-red-500">{errors.email?.message}</div>
         </div>
-        <div>
-          <label
-            htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Password
-          </label>
+
+        {/* パスワード */}
+        <div className="mb-5">
           <input
             type="password"
-            name="password"
+            className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
+            placeholder="パスワード"
             id="password"
-            placeholder="••••••••"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...register('password', { required: true })}
           />
+          <div className="my-3 text-center text-sm text-red-500">{errors.password?.message}</div>
         </div>
-        <div>
-          <label
-            htmlFor="passwordConf"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
-            Password(confirmation)
-          </label>
-          <input
-            type="password"
-            name="passwordConf"
-            id="passwordConf"
-            placeholder="••••••••"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            required
-          />
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full text-white bg-gray-600 hover:bg-blue focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-          >
-            Sign Up
-          </button>
-          {error && <p className="text-red mt-2">{error}</p>}
+
+        {/* サインアップボタン */}
+        <div className="mb-5">
+          {loading ? (
+            <Loading />
+          ) : (
+            <button
+              type="submit"
+              className="font-bold bg-sky-500 hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
+            >
+              サインアップ
+            </button>
+          )}
         </div>
       </form>
-    </section>
-  );
-};
 
-export default SignUp;
+      {message && <div className="my-5 text-center text-sm text-red-500">{message}</div>}
+
+      <div className="text-center text-sm">
+        <Link href="/auth/login" className="text-gray-500 font-bold">
+          ログインはこちら
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+export default Signup
