@@ -4,7 +4,7 @@ import DashboardList from "@/features/dashboard/DashboardList"
 import BalanceSheet from "@/features/dashboard/BalanceSheet"
 import Nav from "../components/layouts/Nav"
 
-const DashboardPage = async () => {
+const DashboardPage = async ({ user }: any) => {
 
   return (
     <>
@@ -12,7 +12,7 @@ const DashboardPage = async () => {
     <div>
       <div className="grid grid-cols-2">
       <PieChart />
-      <Transaction />
+      <Transaction/>
       </div>
       <BalanceSheet />
       <DashboardList />

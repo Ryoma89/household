@@ -11,13 +11,11 @@ const LoginPage = async () => {
     cookies,
   })
 
-  // セッションの取得
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  // ユーザーの取得
+  const { data: { user }, error } = await supabase.auth.getUser()
 
   // 認証している場合、リダイレクト
-  if (session) {
+  if (user) {
     redirect('/dashboard')
   }
 

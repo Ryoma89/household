@@ -6,10 +6,10 @@ const Nav = () => {
     <nav className="p-5 border-b border-black">
       <ul className="flex justify-center items-center">
         <Link href="/dashboard">
-          <li className="mr-4 text-xl hover:opacity-50">Dashboard</li>
+          <li className="mr-10 text-xl hover:opacity-50">Dashboard</li>
         </Link>
         <Link href="/chart">
-          <li className="mr-4 text-xl hover:opacity-50">Chart</li>
+          <li className="mr-10 text-xl hover:opacity-50">Chart</li>
         </Link>
         <Link href="/settings/profile">
           <li className="text-xl hover:opacity-50">Profile</li>

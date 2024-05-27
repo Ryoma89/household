@@ -11,17 +11,15 @@ const EmailPage = async () => {
     cookies,
   })
 
-  // セッションの取得
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  // ユーザーの取得
+  const { data: { user }, error } = await supabase.auth.getUser()
 
   // 未認証の場合、リダイレクト
-  if (!session) {
+  if (!user) {
     redirect('/auth/login')
   }
 
-  return <Email email={session.user.email!} />
+  return <Email email={user.email!} />
 }
 
 export default EmailPage
