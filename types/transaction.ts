@@ -5,6 +5,8 @@ export interface Transaction {
   category: string;
   content: string;
   createdAt: string;
+  user_id: string;
+  id: string;
 }
 
 export type IncomeCategory =

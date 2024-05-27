@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import {
   Popover,
   PopoverTrigger,
@@ -201,7 +201,7 @@ const Transaction = () => {
                           onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "yyyy-MM-dd")
                           ) : (
                             <span>Pick a date</span>
                           )}
