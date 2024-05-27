@@ -1,3 +1,4 @@
+// Transaction.tsx
 "use client";
 import Title from "@/app/components/elements/Title";
 import React, { useEffect, useState } from "react";
@@ -59,7 +60,7 @@ const expenseCategories: ExpenseCategory[] = [
 ];
 
 const Transaction = () => {
-  const { user, addTransaction } = useStore();
+  const { user, addTransaction, fetchTransactions } = useStore();
   const [login, setLogin] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [categories, setCategories] = useState<string[]>(incomeCategories);
@@ -116,6 +117,7 @@ const Transaction = () => {
       console.log("Transaction successfully inserted:");
       alert("Transaction successfully submitted!");
       addTransaction(data); // Add the new transaction to the global state
+      await fetchTransactions(user.id); // Fetch the latest transactions with user ID
       form.reset();
     }
   }
@@ -201,7 +203,7 @@ const Transaction = () => {
                           onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "yyyy-MM-dd")
                           ) : (
                             <span>Pick a date</span>
                           )}
