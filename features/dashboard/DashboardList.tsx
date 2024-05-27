@@ -1,6 +1,6 @@
+// DashboardList.tsx
 'use client'
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase";
+import React, { useEffect, useState, useCallback } from "react";
 import useStore from "@/store";
 import {
   Table,
@@ -11,32 +11,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Title from "@/app/components/elements/Title";
-import { Transaction } from "@/types/transaction";
 import { Trash2 } from "lucide-react";
+import { supabase } from "@/utils/supabase";
 
 const DashboardList = () => {
-  const { user } = useStore();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { user, transactions, fetchTransactions } = useStore();
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    async function fetchTransactions() {
-      if (user.id) {
-        const { data, error } = await supabase
-          .from("transactions")
-          .select("*")
-          .eq("user_id", user.id);
-
-        if (error) {
-          console.error("Error fetching transactions:", error);
-        } else {
-          setTransactions(data);
-        }
-      }
+  const fetchUserTransactions = useCallback(async () => {
+    if (user && user.id) {
+      await fetchTransactions(user.id);
     }
+  }, [user, fetchTransactions]);
 
-    fetchTransactions();
-  }, [user]);
+  useEffect(() => {
+    fetchUserTransactions();
+  }, [fetchUserTransactions]);
+
+  if (!user) {
+    return null; // userが存在しない場合、何もレンダリングしない
+  }
 
   const handleCheckboxChange = (transactionId: string) => {
     setSelectedTransactions((prev) => {
@@ -60,7 +54,7 @@ const DashboardList = () => {
     if (error) {
       console.error("Error deleting transactions:", error);
     } else {
-      setTransactions(transactions.filter((transaction) => !selectedTransactions.has(transaction.id)));
+      fetchTransactions(user.id); // 削除後に最新のトランザクションを取得
       setSelectedTransactions(new Set());
     }
   };
@@ -102,22 +96,30 @@ const DashboardList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell className="w-10">
-                    <input
-                      type="checkbox"
-                      checked={selectedTransactions.has(transaction.id)}
-                      onChange={() => handleCheckboxChange(transaction.id)}
-                    />
-                  </TableCell>
-                  <TableCell>{transaction.date}</TableCell>
-                  <TableCell>{transaction.type}</TableCell>
-                  <TableCell>{transaction.category}</TableCell>
-                  <TableCell>¥{transaction.amount}</TableCell>
-                  <TableCell>{transaction.content}</TableCell>
+              {transactions.length > 0 ? (
+                transactions.map((transaction) => 
+                  transaction ? ( // transaction が null でないことを確認
+                    <TableRow key={transaction.id}>
+                      <TableCell className="w-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedTransactions.has(transaction.id)}
+                          onChange={() => handleCheckboxChange(transaction.id)}
+                        />
+                      </TableCell>
+                      <TableCell>{transaction.date}</TableCell>
+                      <TableCell>{transaction.type}</TableCell>
+                      <TableCell>{transaction.category}</TableCell>
+                      <TableCell>¥{transaction.amount}</TableCell>
+                      <TableCell>{transaction.content}</TableCell>
+                    </TableRow>
+                  ) : null // null の場合は何もレンダリングしない
+                )
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6}>No transactions found.</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>

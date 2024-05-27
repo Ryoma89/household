@@ -1,3 +1,4 @@
+// Transaction.tsx
 "use client";
 import Title from "@/app/components/elements/Title";
 import React, { useEffect, useState } from "react";
@@ -14,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import {
   Popover,
   PopoverTrigger,
@@ -59,7 +60,7 @@ const expenseCategories: ExpenseCategory[] = [
 ];
 
 const Transaction = () => {
-  const { user, addTransaction } = useStore();
+  const { user, addTransaction, fetchTransactions } = useStore();
   const [login, setLogin] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [categories, setCategories] = useState<string[]>(incomeCategories);
@@ -116,6 +117,7 @@ const Transaction = () => {
       console.log("Transaction successfully inserted:");
       alert("Transaction successfully submitted!");
       addTransaction(data); // Add the new transaction to the global state
+      await fetchTransactions(user.id); // Fetch the latest transactions with user ID
       form.reset();
     }
   }
