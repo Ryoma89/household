@@ -22,7 +22,7 @@ const TypeButton = ({ setSelectedType }: Props) => {
   };
 
   return (
-    <div className='mt-10 flex items-center justify-center'>
+    <div className='mt-5 flex items-center justify-center'>
       <Button
         className={incomeType ? 'bg-blue rounded-r-none' : 'bg-gray-200 rounded-r-none'} // Set color based on state
         onClick={handleIncomeClick}

@@ -24,7 +24,6 @@ ChartJS.register(
   Legend
 );
 
-// デフォルトの色設定
 const defaultColor = "rgba(169, 169, 169, 0.2)";
 
 type Props = {
@@ -32,73 +31,70 @@ type Props = {
 }
 
 const BarChart = ({ selectedMonth }: Props) => {
-  const { transactions } = useStore(); // グローバルストアからトランザクションデータを取得
+  const { transactions } = useStore();
   const [data, setData] = useState<PieChartData>({
     labels: [],
     datasets: [],
   });
 
   useEffect(() => {
-    if (!transactions) return; // transactionsが初期化されるのを待つ
+    if (!transactions) return;
 
-    // 選択された月に一致するトランザクションをフィルタリング
     const filteredTransactions = transactions.filter(
       (transaction) =>
         transaction &&
         transaction.date.startsWith(selectedMonth)
     );
 
-    // 日付ごとの収入と支出を集計
     const dailyData: { [key: string]: { Income: number; Expense: number } } = filteredTransactions.reduce((acc, transaction) => {
-      const date = transaction.date.split('T')[0]; // 日付のみを取得
+      const date = transaction.date.split('T')[0];
       if (!acc[date]) {
-        acc[date] = { Income: 0, Expense: 0 }; // 初期値を設定
+        acc[date] = { Income: 0, Expense: 0 };
       }
       if (transaction.type === "Income" || transaction.type === "Expense") {
-        acc[date][transaction.type as "Income" | "Expense"] += transaction.amount; // 金額を集計
+        acc[date][transaction.type as "Income" | "Expense"] += Number(transaction.amount); // 金額を数値に変換
       }
       return acc;
     }, {} as { [key: string]: { Income: number; Expense: number } });
 
-    const dates = Object.keys(dailyData).sort(); // 日付をソート
-    const incomeData = dates.map(date => dailyData[date].Income); // 収入データを取得
-    const expenseData = dates.map(date => dailyData[date].Expense); // 支出データを取得
+    const dates = Object.keys(dailyData).sort();
+    const incomeData = dates.map(date => dailyData[date].Income);
+    const expenseData = dates.map(date => dailyData[date].Expense);
 
-    // グラフデータを設定
     setData({
       labels: dates,
       datasets: [
         {
           label: 'Income',
           data: incomeData,
-          backgroundColor: Array(incomeData.length).fill("rgba(75, 192, 192, 1)"), // 収入のバーの色
+          backgroundColor: Array(incomeData.length).fill("rgba(75, 192, 192, 1)"),
           borderColor: Array(incomeData.length).fill("rgba(75, 192, 192, 1)"),
           borderWidth: 1,
         },
         {
           label: 'Expense',
           data: expenseData,
-          backgroundColor: Array(expenseData.length).fill("rgba(255, 99, 132, 1)"), // 支出のバーの色
+          backgroundColor: Array(expenseData.length).fill("rgba(255, 99, 132, 1)"),
           borderColor: Array(expenseData.length).fill("rgba(255, 99, 132, 1)"),
           borderWidth: 1,
         },
       ],
     });
-  }, [transactions, selectedMonth]); // transactionsとselectedMonthが変更されたときに再実行
+  }, [transactions, selectedMonth]);
 
   if (!transactions) {
-    return <p>Loading...</p>; // ローディング状態を表示
+    return <p>Loading...</p>;
   }
 
   return (
-    <section className="p-10">
+    <section className="p-10 bg-white rounded-lg mt-10">
       <Title title="Bar Chart" />
       {data.labels.length > 0 ? (
-        <div className="mt-10" style={{ height: '400px', width: '100%' }}>
-          <Bar data={data} /> {/* Bar Chartを表示 */}
+        <div className="mt-10 h-[400px] w-full flex flex-col items-center">
+            <Bar data={data} options={{ responsive: true, maintainAspectRatio: false }} />
         </div>
       ) : (
-        <p className="mt-5 text-center">No transactions found for the selected month.</p> // トランザクションが見つからない場合
+        <p className="mt-5 text-center">No transactions found for the selected month.</p>
       )}
     </section>
   );

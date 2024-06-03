@@ -67,7 +67,7 @@ const DashboardList = () => {
   return (
     <section className="p-10">
       <Title title="Dashboard List" /> {/* タイトルを表示 */}
-      <div className="mt-10">
+      <div className="mt-5">
         <div className="flex justify-end mb-4">
           <button
             className="flex items-center bg-red hover:opacity-70 text-white font-bold py-2 px-4 rounded disabled:opacity-50"

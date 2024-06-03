@@ -84,7 +84,7 @@ const DonutChart = ({ selectedMonth }: Props) => {
         position: 'top' as const,
       },
       title: {
-        display: true,
+        display: false,
         text: 'Income vs Expense',
       },
     },
@@ -92,10 +92,10 @@ const DonutChart = ({ selectedMonth }: Props) => {
   };
 
   return (
-    <section className="p-10">
+    <section className="p-10 bg-white rounded-lg h-[600px]">
       <Title title="Donut Chart" />
       {data.labels.length > 0 ? (
-        <div className="mt-10" style={{ height: '400px', width: '100%' }}>
+        <div className="mt-16 h-[400px] w-full flex flex-col items-center">
           <Doughnut data={data} options={options} /> {/* Donut Chartを表示 */}
         </div>
       ) : (

@@ -119,13 +119,13 @@ const PieChart = ({ selectedMonth }: Props) => {
   }
 
   return (
-    <section className="p-10">
+    <section className="p-10 bg-white rounded-lg h-[600px]">
       <Title title="PieChart" /> {/* グラフのタイトルを表示 */}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center justify-center">
         <TypeButton setSelectedType={setSelectedType} /> {/* 収入と支出を切り替えるボタン */}
       </div>
       {data.labels.length > 0 ? ( // データがある場合
-        <div style={{ height: '400px', width: '100%' }}>
+        <div className="mt-3 h-[400px] w-full">
           <Pie data={data} options={options} /> {/* Pieチャートを表示 */}
         </div>
       ) : (

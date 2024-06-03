@@ -27,7 +27,7 @@ const config = {
         buttonPrimary: "#f4810b",
         red: "#FF0000",
         blue: "#0000FF",
-        green: "#00FF00",
+        green: "rgb(0 217 0)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
