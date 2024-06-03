@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Nav from "../components/layouts/Nav";
 import BarChart from "@/features/Chart/BarChart";
 import MultiBalance from "@/features/multiCurrency/MultiBalance";
@@ -29,6 +29,10 @@ const ChartPage = () => {
     const month = String(i + 1).padStart(2, "0");
     return `${year}-${month}`;
   });
+
+  useEffect(() => {
+    setSelectedMonth(getCurrentYearMonth());
+  }, []);
 
   return (
     <>
