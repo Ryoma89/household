@@ -9,6 +9,7 @@ import {
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Nav from '../components/layouts/Nav'
+import { Separator } from '@/components/ui/separator'
 
 // ナビゲーション
 const subNavigation = [
@@ -41,6 +42,7 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
     <Nav />
+    <Separator />
     <div className="grid grid-cols-3 gap-3 p-10">
       <div className="col-span-1 text-sm space-y-1 font-bold flex flex-col">
         {subNavigation.map((item, index) => (

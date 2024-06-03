@@ -35,14 +35,16 @@ import useStore from "@/store";
 import { supabase } from "@/utils/supabase";
 import { ExpenseCategory, IncomeCategory } from "@/types/transaction";
 
+// フォームのスキーマを定義
 const formSchema = z.object({
-  date: z.date().nullable().optional(),
-  category: z.string().min(2).max(50),
-  amount: z.preprocess((val) => parseFloat(val as string), z.number()),
-  type: z.enum(["Income", "Expense"]),
-  content: z.string().max(50),
+  date: z.date().nullable().optional(), // 日付はnullもしくは未定義が許容される
+  category: z.string().min(2).max(50), // カテゴリは2文字以上50文字以下
+  amount: z.preprocess((val) => parseFloat(val as string), z.number()), // 金額は数値に変換してから数値として扱う
+  type: z.enum(["Income", "Expense"]), // タイプは "Income" か "Expense"
+  content: z.string().max(50), // 内容は最大50文字
 });
 
+// カテゴリーの定義
 const incomeCategories: IncomeCategory[] = [
   "salary",
   "allowance",
@@ -60,28 +62,29 @@ const expenseCategories: ExpenseCategory[] = [
 ];
 
 const Transaction = () => {
-  const { user, addTransaction, fetchTransactions } = useStore();
-  const [login, setLogin] = useState(false);
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [categories, setCategories] = useState<string[]>(incomeCategories);
+  const { user, addTransaction, fetchTransactions } = useStore(); // グローバルストアから必要な関数とデータを取得
+  const [login, setLogin] = useState(false); // ログイン状態を管理
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false); // カレンダーの表示状態を管理
+  const [categories, setCategories] = useState<string[]>(incomeCategories); // カテゴリーを状態として管理
 
   useEffect(() => {
     if (user.id) {
-      setLogin(true);
+      setLogin(true); // ユーザーIDが存在する場合、ログイン状態をtrueにする
     }
   }, [user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema), // Zodスキーマをバリデーションに使用
     defaultValues: {
       date: undefined,
       category: "",
+      type: undefined,
       amount: 0,
-      type: "Income",
       content: "",
     },
   });
 
+  // フォームのフィールドが変更されたときにカテゴリーを更新する
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === "type") {
@@ -93,20 +96,25 @@ const Transaction = () => {
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
+  // フォームの送信処理
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!login) {
       throw new Error("ログインしてください");
     }
 
+    // 日付のフォーマットを修正
+    const formattedDate = values.date ? format(values.date, "yyyy-MM-dd") : null;
+
     const transaction = {
-      date: values.date ? format(values.date, "yyyy-MM-dd") : null,
+      date: formattedDate,
       category: values.category,
       amount: values.amount,
       type: values.type,
       content: values.content,
-      user_id: user.id,
+      user_id: user.id, // ユーザーIDを含める
     };
 
+    // トランザクションをデータベースに挿入
     const { data, error: insertError } = await supabase
       .from("transactions")
       .insert([transaction])
@@ -116,15 +124,15 @@ const Transaction = () => {
     } else {
       console.log("Transaction successfully inserted:");
       alert("Transaction successfully submitted!");
-      addTransaction(data); // Add the new transaction to the global state
-      await fetchTransactions(user.id); // Fetch the latest transactions with user ID
-      form.reset();
+      addTransaction(data); // 新しいトランザクションをグローバルステートに追加
+      await fetchTransactions(user.id); // 最新のトランザクションをユーザーIDでフェッチ
+      form.reset(); // フォームをリセット
     }
   }
 
   return (
     <section className="p-10">
-      <Title title="Transaction" />
+      <Title title="Transaction" /> {/* タイトルを表示 */}
       <div className="mt-10">
         <Form {...form}>
           <form
@@ -142,7 +150,7 @@ const Transaction = () => {
                   <FormControl>
                     <Select onValueChange={field.onChange}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Income or Expense" />
+                        <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Income">Income</SelectItem>
@@ -240,7 +248,7 @@ const Transaction = () => {
                   </FormLabel>
                   <FormControl className="mt-0">
                     <Input
-                      placeholder="Enter amount"
+                      placeholder="0"
                       {...field}
                       className="mt-0"
                       type="number"
@@ -267,7 +275,7 @@ const Transaction = () => {
             />
             <Button
               type="submit"
-              className="w-full bg-mainColor hover:bg-subColor"
+              className="w-full bg-buttonPrimary"
             >
               Submit
             </Button>

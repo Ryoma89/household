@@ -19,7 +19,13 @@ const SignupPage = async () => {
     redirect('/dashboard')
   }
 
-  return <Signup />
+  return (
+    <div className='pt-10 relative' style={{ height: 'calc(100vh - 120px)', background:  "#f4f4f4"}}>
+      <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5'>
+      <Signup />
+      </div>
+    </div>
+  )
 }
 
 export default SignupPage

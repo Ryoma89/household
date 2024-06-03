@@ -1,125 +1,143 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
-import Loading from '@/app/loading'
-import * as z from 'zod'
-import type { Database } from '@/lib/database.types'
-type Schema = z.infer<typeof schema>
+import { useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import Loading from "@/app/loading";
+import * as z from "zod";
+import type { Database } from "@/lib/database.types";
+import { Button } from "@/components/ui/button";
 
-// 入力データの検証ルールを定義
+type Schema = z.infer<typeof schema>;
+
+// Define validation rules for input data
 const schema = z.object({
-  email: z.string().email({ message: 'メールアドレスの形式ではありません。' }),
-  password: z.string().min(6, { message: '6文字以上入力する必要があります。' }),
-})
+  email: z.string().email({ message: "Invalid email format." }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters." }),
+});
 
-// ログインページ
+// Login page
 const Login = () => {
-  const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+  const router = useRouter();
+  const supabase = createClientComponentClient<Database>();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    // 初期値
-    defaultValues: { email: '', password: '' },
-    // 入力値の検証
+    // Initial values
+    defaultValues: { email: "", password: "" },
+    // Input validation
     resolver: zodResolver(schema),
-  })
+  });
 
-  // 送信
+  // Submit
   const onSubmit: SubmitHandler<Schema> = async (data) => {
-    setLoading(true)
+    setLoading(true);
 
     try {
-      // ログイン
+      // Login
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
-      })
+      });
 
-      // エラーチェック
+      // Error check
       if (error) {
-        setMessage('エラーが発生しました。' + error.message)
-        return
+        setMessage("An error occurred: " + error.message);
+        return;
       }
 
-      // トップページに遷移
-      router.push('/dashboard')
+      // Navigate to the dashboard
+      router.push("/dashboard");
     } catch (error) {
-      setMessage('エラーが発生しました。' + error)
-      return
+      setMessage("An error occurred: " + error);
+      return;
     } finally {
-      setLoading(false)
-      router.refresh()
+      setLoading(false);
+      router.refresh();
     }
-  }
+  };
 
   return (
-    <div className="max-w-[400px] mx-auto  mt-10">
-      <div className="text-center font-bold text-xl mb-10">ログイン</div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* メールアドレス */}
-        <div className="mb-3">
-          <input
-            type="email"
-            className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="メールアドレス"
-            id="email"
-            {...register('email', { required: true })}
-          />
-          <div className="my-3 text-center text-sm text-red-500">{errors.email?.message}</div>
+    <div className="px-10 py-20 bg-white rounded-lg">
+      <div className="w-3/5 mx-auto">
+        <div className="text-center font-bold text-4xl mb-10">Login</div>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
+          {/* Email */}
+          <div className="mb-3">
+            <input
+              type="email"
+              className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
+              placeholder="Email"
+              id="email"
+              {...register("email", { required: true })}
+            />
+            <div className="my-3 text-center text-sm text-red-500">
+              {errors.email?.message}
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="mb-5">
+            <input
+              type="password"
+              className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
+              placeholder="Password"
+              id="password"
+              {...register("password", { required: true })}
+            />
+            <div className="my-3 text-center text-sm text-red-500">
+              {errors.password?.message}
+            </div>
+          </div>
+
+          {/* Login button */}
+          <div className="mb-5">
+            {loading ? (
+              <Loading />
+            ) : (
+              <Button
+                type="submit"
+                className="font-bold bg-buttonPrimary w-full rounded-full p-2 text-white text-sm"
+              >
+                Login
+              </Button>
+            )}
+          </div>
+        </form>
+
+        {message && (
+          <div className="my-5 text-center text-sm text-red-500">{message}</div>
+        )}
+
+        <div className="text-center text-sm mb-2">
+          <Link
+            href="/auth/resetPassword"
+            className="text-gray-500 hover:opacity-70 font-light "
+          >
+            Forgot your password?
+          </Link>
         </div>
-
-        {/* パスワード */}
-        <div className="mb-5">
-          <input
-            type="password"
-            className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="パスワード"
-            id="password"
-            {...register('password', { required: true })}
-          />
-          <div className="my-3 text-center text-sm text-red-500">{errors.password?.message}</div>
+        <div className="text-center text-sm">
+          <Link
+            href="/auth/signup"
+            className="text-gray-500 font-light hover:opacity-70"
+          >
+            Don't have an account? Sign up
+          </Link>
         </div>
-
-        {/* ログインボタン */}
-        <div className="mb-5">
-          {loading ? (
-            <Loading />
-          ) : (
-            <button
-              type="submit"
-              className="font-bold bg-sky-500 hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
-            >
-              ログイン
-            </button>
-          )}
-        </div>
-      </form>
-
-      {message && <div className="my-5 text-center text-sm text-red-500">{message}</div>}
-
-      <div className="text-center text-sm mb-5">
-        <Link href="/auth/resetPassword" className="text-gray-500 font-bold">
-          パスワードを忘れた方はこちら
-        </Link>
-      </div>
-      <div className="text-center text-sm">
-        <Link href="/auth/signup" className="text-gray-500 font-bold">
-          アカウントを作成する
-        </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

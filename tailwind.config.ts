@@ -23,6 +23,8 @@ const config = {
         mainColor: "#884A39",
         subColor: "#C38154",
         accentColor: "#FFC26F",
+        lightColor: "#FFEDD4",
+        buttonPrimary: "#f4810b",
         red: "#FF0000",
         blue: "#0000FF",
         green: "#00FF00",

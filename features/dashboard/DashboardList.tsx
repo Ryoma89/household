@@ -13,25 +13,29 @@ import {
 import Title from "@/app/components/elements/Title";
 import { Trash2 } from "lucide-react";
 import { supabase } from "@/utils/supabase";
+import { format } from "date-fns";
 
 const DashboardList = () => {
-  const { user, transactions, fetchTransactions } = useStore();
-  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
+  const { user, transactions, fetchTransactions } = useStore(); // グローバルストアからユーザー、トランザクション、フェッチ関数を取得
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set()); // 選択されたトランザクションIDを管理
 
+  // ユーザーのトランザクションをフェッチする関数
   const fetchUserTransactions = useCallback(async () => {
     if (user && user.id) {
       await fetchTransactions(user.id);
     }
   }, [user, fetchTransactions]);
 
+  // コンポーネントの初回レンダリング時にトランザクションをフェッチ
   useEffect(() => {
     fetchUserTransactions();
   }, [fetchUserTransactions]);
 
   if (!user) {
-    return null; // userが存在しない場合、何もレンダリングしない
+    return null; // ユーザーが存在しない場合、何もレンダリングしない
   }
 
+  // チェックボックスの変更をハンドリング
   const handleCheckboxChange = (transactionId: string) => {
     setSelectedTransactions((prev) => {
       const newSelected = new Set(prev);
@@ -44,6 +48,7 @@ const DashboardList = () => {
     });
   };
 
+  // 選択されたトランザクションを削除する関数
   const handleDelete = async () => {
     const transactionIds = Array.from(selectedTransactions);
     const { error } = await supabase
@@ -61,13 +66,13 @@ const DashboardList = () => {
 
   return (
     <section className="p-10">
-      <Title title="Dashboard List" />
+      <Title title="Dashboard List" /> {/* タイトルを表示 */}
       <div className="mt-10">
         <div className="flex justify-end mb-4">
           <button
             className="flex items-center bg-red hover:opacity-70 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
             onClick={handleDelete}
-            disabled={selectedTransactions.size === 0}
+            disabled={selectedTransactions.size === 0} // 選択されたトランザクションがない場合はボタンを無効化
           >
             <Trash2 className="mr-2" />
             Delete
@@ -107,7 +112,7 @@ const DashboardList = () => {
                           onChange={() => handleCheckboxChange(transaction.id)}
                         />
                       </TableCell>
-                      <TableCell>{transaction.date}</TableCell>
+                      <TableCell>{format(new Date(transaction.date), "yyyy-MM-dd")}</TableCell>
                       <TableCell>{transaction.type}</TableCell>
                       <TableCell>{transaction.category}</TableCell>
                       <TableCell>¥{transaction.amount}</TableCell>

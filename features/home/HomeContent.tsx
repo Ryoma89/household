@@ -4,12 +4,13 @@ import React from 'react'
 
 const HomeContent = () => {
   return (
-    <div className='text-center mt-40'>
-      <h2 className='text-7xl'>Household Budget Pro</h2>
-      <p className='text-3xl mt-10'>Supports Easy and Fast Household Budget Management</p>
-      <div className='mt-10'>
-      <Link href='/auth/login'><Button className='mr-4 bg-accentColor w-60 hover:bg-subColor'>Login</Button></Link>
-      <Link href='/auth/signup'><Button className='ml-4 bg-subColor w-60 hover:bg-accentColor'>Sign up</Button></Link>
+    <div className='grid grid-cols-2 items-center' style={{ height: 'calc(100vh - 120px)' }}>
+      <div className='text-center'>
+      <h2 className='text-7xl font-bold'>MoneyMate</h2>
+      <p className='text-xl mt-10'>Your Best Partner in Household Budgeting</p>
+      </div>
+      <div className='h-full'>
+        <img src="/Home.png" alt="" className='h-full'/>
       </div>
     </div>
   )
