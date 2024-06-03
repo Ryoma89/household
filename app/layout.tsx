@@ -7,8 +7,8 @@ import SupabaseListener from './components/supabaseListener'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Household Budget App",
-  description: "Supports Easy and Fast Household Budget Management",
+  title: "MoneyMate",
+  description: "Your Best Partner in Household Budgeting",
 };
 
 export default function RootLayout({
@@ -20,7 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SupabaseListener />
-          {children}
+        <main style={{ height: 'calc(100vh - 120px)'}}>
+        {children}
+        </main>
       </body>
     </html>
   );

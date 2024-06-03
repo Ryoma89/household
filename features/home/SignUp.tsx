@@ -9,16 +9,18 @@ import Link from 'next/link'
 import Loading from '@/app/loading'
 import * as z from 'zod'
 import type { Database } from '@/lib/database.types'
+import { Button } from '@/components/ui/button'
+
 type Schema = z.infer<typeof schema>
 
-// 入力データの検証ルールを定義
+// Define validation rules for input data
 const schema = z.object({
-  name: z.string().min(2, { message: '2文字以上入力する必要があります。' }),
-  email: z.string().email({ message: 'メールアドレスの形式ではありません。' }),
-  password: z.string().min(6, { message: '6文字以上入力する必要があります。' }),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Invalid email format.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 })
 
-// サインアップ
+// Signup
 const Signup = () => {
   const router = useRouter()
   const supabase = createClientComponentClient<Database>()
@@ -31,18 +33,18 @@ const Signup = () => {
     formState: { errors },
     reset,
   } = useForm({
-    // 初期値
+    // Initial values
     defaultValues: { name: '', email: '', password: '' },
-    // 入力値の検証
+    // Input validation
     resolver: zodResolver(schema),
   })
 
-  // 送信
+  // Submit
   const onSubmit: SubmitHandler<Schema> = async (data) => {
     setLoading(true)
 
     try {
-      // サインアップ
+      // Signup
       const { error: errorSignup } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -51,31 +53,31 @@ const Signup = () => {
         },
       })
 
-      // エラーチェック
+      // Error check
       if (errorSignup) {
-        setMessage('エラーが発生しました。' + errorSignup.message)
+        setMessage('An error occurred: ' + errorSignup.message)
         return
       }
 
-      // プロフィールの名前を更新
+      // Update profile name
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ name: data.name })
         .eq('email', data.email)
 
-      // エラーチェック
+      // Error check
       if (updateError) {
-        setMessage('エラーが発生しました。' + updateError.message)
+        setMessage('An error occurred: ' + updateError.message)
         return
       }
 
-      // 入力フォームクリア
+      // Clear input form
       reset()
       setMessage(
-        '本登録用のURLを記載したメールを送信しました。メールをご確認の上、メール本文中のURLをクリックして、本登録を行ってください。'
+        'A confirmation email has been sent. Please check your email and click the URL to complete the registration.'
       )
     } catch (error) {
-      setMessage('エラーが発生しました。' + error)
+      setMessage('An error occurred: ' + error)
       return
     } finally {
       setLoading(false)
@@ -84,56 +86,57 @@ const Signup = () => {
   }
 
   return (
-    <div className="max-w-[400px] mx-auto mt-10">
-      <div className="text-center font-bold text-xl mb-10">サインアップ</div>
+    <div className="px-10 py-20 bg-white rounded-lg">
+      <div className='w-3/5 mx-auto'>
+      <div className="text-center font-bold text-2xl mb-10">Sign Up</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* 名前 */}
+        {/* Name */}
         <div className="mb-3">
           <input
             type="text"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="名前"
+            placeholder="Name"
             id="name"
             {...register('name', { required: true })}
           />
           <div className="my-3 text-center text-sm text-red-500">{errors.name?.message}</div>
         </div>
 
-        {/* メールアドレス */}
+        {/* Email */}
         <div className="mb-3">
           <input
             type="email"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="メールアドレス"
+            placeholder="Email"
             id="email"
             {...register('email', { required: true })}
           />
           <div className="my-3 text-center text-sm text-red-500">{errors.email?.message}</div>
         </div>
 
-        {/* パスワード */}
+        {/* Password */}
         <div className="mb-5">
           <input
             type="password"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="パスワード"
+            placeholder="Password"
             id="password"
             {...register('password', { required: true })}
           />
           <div className="my-3 text-center text-sm text-red-500">{errors.password?.message}</div>
         </div>
 
-        {/* サインアップボタン */}
+        {/* Signup button */}
         <div className="mb-5">
           {loading ? (
             <Loading />
           ) : (
-            <button
+            <Button
               type="submit"
-              className="font-bold bg-sky-500 hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
+              className="font-bold bg-buttonPrimary w-full rounded-full p-2 text-white text-sm"
             >
-              サインアップ
-            </button>
+              Sign Up
+            </Button>
           )}
         </div>
       </form>
@@ -141,9 +144,10 @@ const Signup = () => {
       {message && <div className="my-5 text-center text-sm text-red-500">{message}</div>}
 
       <div className="text-center text-sm">
-        <Link href="/auth/login" className="text-gray-500 font-bold">
-          ログインはこちら
+        <Link href="/auth/login" className="text-gray-500 font-bold hover:opacity-70">
+          Already have an account? Log in
         </Link>
+      </div>
       </div>
     </div>
   )

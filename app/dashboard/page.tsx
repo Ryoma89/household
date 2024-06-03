@@ -1,20 +1,21 @@
-import PieChart from "@/features/dashboard/PieChart"
+import PieChart from "@/features/Chart/PieChart"
 import Transaction from "@/features/dashboard/Transaction"
 import DashboardList from "@/features/dashboard/DashboardList"
 import BalanceSheet from "@/features/dashboard/BalanceSheet"
 import Nav from "../components/layouts/Nav"
+import { Separator } from "@/components/ui/separator"
 
 const DashboardPage = async ({ user }: any) => {
 
   return (
     <>
     <Nav />
+    <Separator />
     <div>
       <div className="grid grid-cols-2">
-      <PieChart />
+      <BalanceSheet />
       <Transaction/>
       </div>
-      <BalanceSheet />
       <DashboardList />
     </div>
     </>

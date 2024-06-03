@@ -1,18 +1,24 @@
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 
-const TypeButton = () => {
+type Props = {
+  setSelectedType: (type: "Income" | "Expense") => void;
+}
+
+const TypeButton = ({ setSelectedType }: Props) => {
   const [incomeType, setIncomeType] = useState(true); // State to track button type
   const [expenseType, setExpenseType] = useState(false); // State to track button type
 
   const handleIncomeClick = () => {
     setIncomeType(true);
     setExpenseType(false);
+    setSelectedType("Income");
   };
 
   const handleExpenseClick = () => {
     setIncomeType(false);
     setExpenseType(true);
+    setSelectedType("Expense");
   };
 
   return (
