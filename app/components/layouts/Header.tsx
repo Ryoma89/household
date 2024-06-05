@@ -29,7 +29,7 @@ const Header = ({
   }, [user, setUser, profile]);
 
   return (
-    <header className="flex justify-between items-center px-5 py-3 h-auto">
+    <header className="flex justify-between items-center max-w-screen-xl mx-auto px-10 py-3 h-auto">
       <h1 className="">
         <img src="/logo.png" alt="" className="h-14" />
       </h1>

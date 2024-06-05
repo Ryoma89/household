@@ -96,6 +96,7 @@ const DashboardList = () => {
                 <TableHead>Date</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Category</TableHead>
+                <TableHead>Currency</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Content</TableHead>
               </TableRow>
@@ -115,6 +116,7 @@ const DashboardList = () => {
                       <TableCell>{format(new Date(transaction.date), "yyyy-MM-dd")}</TableCell>
                       <TableCell>{transaction.type}</TableCell>
                       <TableCell>{transaction.category}</TableCell>
+                      <TableCell>{transaction.currency}</TableCell>
                       <TableCell>¥{transaction.amount}</TableCell>
                       <TableCell>{transaction.content}</TableCell>
                     </TableRow>

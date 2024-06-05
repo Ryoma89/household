@@ -7,6 +7,7 @@ export interface Transaction {
   createdAt: string;
   user_id: string;
   id: string;
+  currency: string;
 }
 
 export type IncomeCategory =
@@ -32,3 +33,15 @@ export interface Expense {
 export interface Balance {
   balance: number;
 }
+
+// トランザクション情報の型定義
+export type TransactionType = {
+  id: string;
+  user_id: string;
+  date: string;
+  category: string;
+  amount: number;
+  type: string;
+  content: string;
+  currency: string; // currencyプロパティを追加
+};
