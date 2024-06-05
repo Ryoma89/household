@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SupabaseListener from './components/supabaseListener'
+import { Toaster } from "@/components/ui/toaster";
 // import Header from "./components/layouts/Header";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,6 +23,7 @@ export default function RootLayout({
         <SupabaseListener />
         <main style={{ height: 'calc(100vh - 120px)'}}>
         {children}
+        <Toaster />
         </main>
       </body>
     </html>
