@@ -52,7 +52,7 @@ const BarChart = ({ selectedMonth }: Props) => {
         acc[date] = { Income: 0, Expense: 0 };
       }
       if (transaction.type === "Income" || transaction.type === "Expense") {
-        acc[date][transaction.type as "Income" | "Expense"] += Number(transaction.amount); // 金額を数値に変換
+        acc[date][transaction.type as "Income" | "Expense"] += Number(transaction.converted_amount); // converted_amountを使用
       }
       return acc;
     }, {} as { [key: string]: { Income: number; Expense: number } });

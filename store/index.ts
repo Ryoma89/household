@@ -14,11 +14,12 @@ type StateType = {
   setTransactions: (payload: TransactionType[]) => void;
   addTransaction: (transaction: TransactionType) => void;
   fetchTransactions: (userId: string) => Promise<void>;
+  fetchUserProfile: (userId: string) => Promise<void>;
 };
 
 // Zustandのストアを作成
 const useStore = create<StateType>((set) => ({
-  user: { id: "", email: "", name: "", introduce: "", avatar_url: "" },
+  user: { id: "", email: "", name: "", introduce: "", avatar_url: "", primary_currency: "USD" },
   transactions: [],
   setUser: (payload) => set({ user: payload }),
   setTransactions: (payload) => set({ transactions: payload }),
@@ -34,6 +35,18 @@ const useStore = create<StateType>((set) => ({
       console.error("Error fetching transactions:", error);
     } else {
       set({ transactions: data as TransactionType[] });
+    }
+  },
+  fetchUserProfile: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (error) {
+      console.error('Error fetching user profile:', error);
+    } else {
+      set({ user: data });
     }
   },
 }));

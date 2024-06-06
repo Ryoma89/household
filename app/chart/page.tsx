@@ -38,7 +38,7 @@ const ChartPage = () => {
     <>
       <Nav />
       <Separator />
-      <section className="px-7 pt-4 pb-10 bg-gray-100">
+      <section className="px-10 pt-5 pb-14 bg-gray-100">
         <div className="flex justify-center items-center mb-5 mt-5">
           <Select
             onValueChange={(value) => setSelectedMonth(value)}
