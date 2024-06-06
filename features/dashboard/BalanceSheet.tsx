@@ -1,16 +1,25 @@
-'use client'
+"use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/utils/supabase";
 import useStore from "@/store";
 import Title from "@/app/components/elements/Title";
 import BalanceCard from "@/app/components/elements/BalanceCard";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getCurrencySymbol } from "@/constants/currencies";
 
 // 現在の年と月を取得する関数
 const getCurrentYearMonth = () => {
   const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}`;
 };
 
 const BalanceSheet = () => {
@@ -23,19 +32,27 @@ const BalanceSheet = () => {
   const calculateBalance = useCallback(() => {
     if (transactions) {
       // 選択された月のトランザクションのみをフィルタリング
-      const filteredTransactions = transactions.filter(transaction => 
-        transaction !== null && transaction !== undefined &&
-        transaction.date.startsWith(selectedMonth)
+      const filteredTransactions = transactions.filter(
+        (transaction) =>
+          transaction !== null &&
+          transaction !== undefined &&
+          transaction.date.startsWith(selectedMonth)
       );
       // 収入の合計を計算（変換された金額を使用）
       const incomeSum = filteredTransactions
         .filter((transaction) => transaction.type === "Income")
-        .reduce((sum, transaction) => sum + Number(transaction.converted_amount), 0);
+        .reduce(
+          (sum, transaction) => sum + Number(transaction.converted_amount),
+          0
+        );
       // 支出の合計を計算（変換された金額を使用）
       const expenseSum = filteredTransactions
         .filter((transaction) => transaction.type === "Expense")
-        .reduce((sum, transaction) => sum + Number(transaction.converted_amount), 0);
-      
+        .reduce(
+          (sum, transaction) => sum + Number(transaction.converted_amount),
+          0
+        );
+
       setIncome(incomeSum);
       setExpense(expenseSum);
     }
@@ -51,7 +68,7 @@ const BalanceSheet = () => {
   // 1年間の月を生成
   const months = Array.from({ length: 12 }, (_, i) => {
     const year = new Date().getFullYear();
-    const month = String(i + 1).padStart(2, '0');
+    const month = String(i + 1).padStart(2, "0");
     return `${year}-${month}`;
   });
 
@@ -59,7 +76,10 @@ const BalanceSheet = () => {
     <section className="p-10">
       <Title title="Balance Sheet" /> {/* タイトルを表示 */}
       <div className="flex justify-center items-center mb-5 mt-10">
-        <Select onValueChange={(value) => setSelectedMonth(value)} value={selectedMonth}>
+        <Select
+          onValueChange={(value) => setSelectedMonth(value)}
+          value={selectedMonth}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue>{selectedMonth}</SelectValue>
           </SelectTrigger>
@@ -72,12 +92,24 @@ const BalanceSheet = () => {
           </SelectContent>
         </Select>
       </div>
-      <BalanceCard 
-        income={income} 
-        expense={expense} 
-        balance={balance} 
+      <BalanceCard
+        title="Income"
+        amount={income}
         currencySymbol={getCurrencySymbol(user.primary_currency)}
-      /> {/* 収入、支出、バランスを表示 */}
+        bgColor="bg-blue"
+      />
+      <BalanceCard
+        title="Expense"
+        amount={expense}
+        currencySymbol={getCurrencySymbol(user.primary_currency)}
+        bgColor=" bg-red"
+      />
+      <BalanceCard
+        title="Balance"
+        amount={balance}
+        currencySymbol={getCurrencySymbol(user.primary_currency)}
+        bgColor="bg-green"
+      />
     </section>
   );
 };
