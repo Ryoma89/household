@@ -138,7 +138,7 @@ const DashboardList = () => {
                       <TableCell>{transaction.category}</TableCell>
                       <TableCell>{transaction.currency}</TableCell>
                       <TableCell>{getCurrencySymbol(transaction.currency)}{transaction.amount}</TableCell>
-                      <TableCell>{transaction.content}</TableCell>
+                      <TableCell>{transaction.content || 'No content'}</TableCell>
                     </TableRow>
                   ) : null
                 )

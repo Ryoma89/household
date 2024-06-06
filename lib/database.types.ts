@@ -41,6 +41,7 @@ export type Database = {
           id: string;
           introduce: string | null;
           name: string | null;
+          primary_currency: string;
         };
         Insert: {
           avatar_url?: string | null;

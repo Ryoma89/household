@@ -44,11 +44,11 @@ const DonutChart = ({ selectedMonth }: Props) => {
         // 収入と支出を集計
         const income = filteredTransactions
           .filter((transaction) => transaction.type === "Income")
-          .reduce((acc, transaction) => acc + Number(transaction.amount), 0);
+          .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
 
         const expense = filteredTransactions
           .filter((transaction) => transaction.type === "Expense")
-          .reduce((acc, transaction) => acc + Number(transaction.amount), 0);
+          .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
 
         // グラフデータを設定
         setData({

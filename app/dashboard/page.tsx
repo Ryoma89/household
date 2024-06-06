@@ -11,7 +11,7 @@ const DashboardPage = async ({ user }: any) => {
     <>
     <Nav />
     <Separator />
-    <div>
+    <div className="p-5">
       <div className="grid grid-cols-2">
       <BalanceSheet />
       <Transaction/>

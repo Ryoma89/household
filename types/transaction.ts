@@ -1,14 +1,29 @@
 export interface Transaction {
-  date: string;
-  amount: number;
-  type: "Income" | "Expense";
-  category: string;
-  content: string;
-  createdAt: string;
-  user_id: string;
   id: string;
+  user_id: string;
+  date: string;
+  category: string;
+  amount: number;
+  converted_amount: number;
+  type: string;
+  content: string;
   currency: string;
+  created_at: string;
 }
+
+// トランザクション情報の型定義
+export type TransactionType = {
+  id: string;
+  user_id: string;
+  date: string;
+  category: string;
+  amount: number;
+  converted_amount: number;
+  type: string;
+  content: string;
+  currency: string;
+  created_at: string;
+};
 
 export type IncomeCategory =
   | "salary"
@@ -34,14 +49,3 @@ export interface Balance {
   balance: number;
 }
 
-// トランザクション情報の型定義
-export type TransactionType = {
-  id: string;
-  user_id: string;
-  date: string;
-  category: string;
-  amount: number;
-  type: string;
-  content: string;
-  currency: string; // currencyプロパティを追加
-};

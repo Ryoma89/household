@@ -4,13 +4,8 @@ import { supabase } from "@/utils/supabase";
 import useStore from "@/store";
 import Title from "@/app/components/elements/Title";
 import BalanceCard from "@/app/components/elements/BalanceCard";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getCurrencySymbol } from "@/constants/currencies";
 
 // 現在の年と月を取得する関数
 const getCurrentYearMonth = () => {
@@ -32,14 +27,14 @@ const BalanceSheet = () => {
         transaction !== null && transaction !== undefined &&
         transaction.date.startsWith(selectedMonth)
       );
-      // 収入の合計を計算
+      // 収入の合計を計算（変換された金額を使用）
       const incomeSum = filteredTransactions
         .filter((transaction) => transaction.type === "Income")
-        .reduce((sum, transaction) => sum + Number(transaction.amount), 0);
-      // 支出の合計を計算
+        .reduce((sum, transaction) => sum + Number(transaction.converted_amount), 0);
+      // 支出の合計を計算（変換された金額を使用）
       const expenseSum = filteredTransactions
         .filter((transaction) => transaction.type === "Expense")
-        .reduce((sum, transaction) => sum + Number(transaction.amount), 0);
+        .reduce((sum, transaction) => sum + Number(transaction.converted_amount), 0);
       
       setIncome(incomeSum);
       setExpense(expenseSum);
@@ -77,7 +72,12 @@ const BalanceSheet = () => {
           </SelectContent>
         </Select>
       </div>
-      <BalanceCard income={income} expense={expense} balance={balance} /> {/* 収入、支出、バランスを表示 */}
+      <BalanceCard 
+        income={income} 
+        expense={expense} 
+        balance={balance} 
+        currencySymbol={getCurrencySymbol(user.primary_currency)}
+      /> {/* 収入、支出、バランスを表示 */}
     </section>
   );
 };

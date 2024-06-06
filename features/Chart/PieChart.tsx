@@ -80,7 +80,7 @@ const PieChart = ({ selectedMonth }: Props) => {
       (category) =>
         filteredTransactions
           .filter((transaction) => transaction.category === category)
-          .reduce((total, transaction) => total + Number(transaction.amount), 0) // 各カテゴリの合計金額を計算
+          .reduce((total, transaction) => total + Number(transaction.converted_amount), 0) // 各カテゴリの合計金額を計算
     );
 
     // 各カテゴリの色を設定

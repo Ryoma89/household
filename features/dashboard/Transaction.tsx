@@ -18,6 +18,29 @@ import { ExpenseCategory, IncomeCategory } from '@/types/transaction';
 import Title from '@/app/components/elements/Title';
 import { currencies } from '@/constants/currencies';
 
+// 為替レートを取得する関数
+export const getExchangeRate = async (fromCurrency: string, toCurrency: string, date: string): Promise<number> => {
+  const response = await fetch(`/api/exchangeRates?date=${date}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch exchange rates');
+  }
+  const data = await response.json();
+  console.log(`Exchange rates for ${date}:`, data.rates); // レスポンスのログ
+
+  const fromRate = data.rates[fromCurrency];
+  const toRate = data.rates[toCurrency];
+
+  console.log(`From currency: ${fromCurrency}, Rate: ${fromRate}`);
+  console.log(`To currency: ${toCurrency}, Rate: ${toRate}`);
+
+  // 為替レートがundefinedでないか確認
+  if (!fromRate || !toRate) {
+    throw new Error(`Exchange rate for ${fromCurrency} or ${toCurrency} not found`);
+  }
+
+  return toRate / fromRate;
+};
+
 // フォームのスキーマを定義
 const formSchema = z.object({
   date: z.date().nullable().optional(),
@@ -31,19 +54,19 @@ const formSchema = z.object({
 const incomeCategories: IncomeCategory[] = ["salary", "allowance", "rent", "stock", "investment"];
 const expenseCategories: ExpenseCategory[] = ["food", "daily", "rent", "enjoy", "entertainment", "transportation"];
 
-
 const Transaction = () => {
-  const { user, addTransaction, fetchTransactions } = useStore();
+  const { user, addTransaction, fetchTransactions, fetchUserProfile } = useStore();
   const [login, setLogin] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [categories, setCategories] = useState<string[]>(incomeCategories);
 
-  // ユーザーのログイン状態を監視
+  // ユーザーのログイン状態を監視し、プロフィールを取得
   useEffect(() => {
     if (user.id) {
       setLogin(true);
+      fetchUserProfile(user.id);
     }
-  }, [user]);
+  }, [user.id, fetchUserProfile]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,28 +96,55 @@ const Transaction = () => {
       throw new Error("ログインしてください");
     }
 
-    const formattedDate = values.date ? format(values.date, "yyyy-MM-dd") : null;
-    const transaction = {
-      date: formattedDate,
-      category: values.category,
-      amount: values.amount,
-      type: values.type,
-      content: values.content,
-      currency: values.currency, // 通貨コードを含める
-      user_id: user.id
-    };
+    const formattedDate = values.date ? format(values.date, "yyyy-MM-dd") : '';
 
-    const { data, error: insertError } = await supabase
-      .from("transactions")
-      .insert([transaction])
-      .single();
-    if (insertError) {
-      console.error("Error inserting transaction:", insertError);
-    } else {
-      alert("Transaction successfully submitted!");
-      addTransaction(data);
-      await fetchTransactions(user.id);
-      form.reset();
+    // primary_currencyがundefinedの場合、デフォルト値を設定
+    const primaryCurrency = user.primary_currency || 'USD';
+
+    console.log(`User's primary currency: ${primaryCurrency}`); // ユーザーの主な通貨をログに出力
+
+    // 為替レートを取得
+    try {
+      const exchangeRate = await getExchangeRate(values.currency, primaryCurrency, formattedDate);
+      if (isNaN(exchangeRate)) {
+        throw new Error('Invalid exchange rate calculated');
+      }
+      
+      const convertedAmount = values.amount * exchangeRate;
+      console.log(`Converted amount: ${convertedAmount}`); // convertedAmountのログ
+
+      // convertedAmountがNaNでないことを確認
+      if (isNaN(convertedAmount)) {
+        throw new Error("Failed to calculate converted amount");
+      }
+
+      const transaction = {
+        date: formattedDate,
+        category: values.category,
+        amount: values.amount,
+        converted_amount: convertedAmount,
+        type: values.type,
+        content: values.content,
+        currency: values.currency,
+        user_id: user.id
+      };
+      console.log("Transaction data to be sent:", transaction); // トランザクションデータのログ
+
+      const { data, error: insertError } = await supabase
+        .from("transactions")
+        .insert([transaction])
+        .single();
+      if (insertError) {
+        console.error("Error inserting transaction:", insertError);
+      } else {
+        alert("Transaction successfully submitted!");
+        addTransaction(data);
+        await fetchTransactions(user.id);
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Error fetching exchange rate:", error);
+      alert("Failed to convert currency. Please try again.");
     }
   }
 

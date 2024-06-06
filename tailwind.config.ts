@@ -25,6 +25,7 @@ const config = {
         accentColor: "#FFC26F",
         lightColor: "#FFEDD4",
         buttonPrimary: "#f4810b",
+        hover: "#ffe4c9",
         red: "#FF0000",
         blue: "#0000FF",
         green: "rgb(0 217 0)",

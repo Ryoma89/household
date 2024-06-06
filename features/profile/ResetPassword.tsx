@@ -84,7 +84,7 @@ const ResetPassword = () => {
           ) : (
             <button
               type="submit"
-              className="font-bold bg-sky-500 hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
+              className="font-bold bg-buttonPrimary hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
             >
               送信
             </button>
