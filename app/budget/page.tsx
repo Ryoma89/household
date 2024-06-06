@@ -1,8 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Nav from "../components/layouts/Nav";
-import BarChart from "@/features/chart/BarChart";
-import PieChart from "@/features/chart/PieChart";
 import {
   Select,
   SelectContent,
@@ -10,8 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DonutChart from "@/features/chart/DonutChart";
 import { Separator } from "@/components/ui/separator";
+import Title from "../components/elements/Title";
+import BudgetCard from "@/features/budget/BudgetCard";
+import BudgetInput from "@/features/budget/BudgetInput";
 
 const getCurrentYearMonth = () => {
   const date = new Date();
@@ -21,7 +21,7 @@ const getCurrentYearMonth = () => {
   )}`;
 };
 
-const ChartPage = () => {
+const BudgetPage = () => {
   const [selectedMonth, setSelectedMonth] = useState(getCurrentYearMonth());
   const months = Array.from({ length: 12 }, (_, i) => {
     const year = new Date().getFullYear();
@@ -37,7 +37,13 @@ const ChartPage = () => {
     <>
       <Nav />
       <Separator />
-      <section className="px-10 pt-5 pb-14 bg-gray-100">
+      <section className="px-10 pt-10">
+        <Title title="Budget" />
+
+        {/* Budget Input */}
+        <BudgetInput selectedMonth={selectedMonth} />
+
+        {/* select */}
         <div className="flex justify-center items-center mb-5 mt-5">
           <Select
             onValueChange={(value) => setSelectedMonth(value)}
@@ -55,20 +61,12 @@ const ChartPage = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-2 gap-7">
-          <div className="">
-            <PieChart selectedMonth={selectedMonth} />
-          </div>
-          <div className="">
-            <DonutChart selectedMonth={selectedMonth} />
-          </div>
-        </div>
-        <div className="w-full h-[550px]">
-          <BarChart selectedMonth={selectedMonth} />
-        </div>
+
+        {/* Budget Card */}
+        <BudgetCard selectedMonth={selectedMonth} />
       </section>
     </>
   );
 };
 
-export default ChartPage;
+export default BudgetPage;

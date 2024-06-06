@@ -19,6 +19,11 @@ const Nav = () => {
           </Link>
         </li>
         <li className="mr-10">
+          <Link href="/budget" className={getLinkClass("/budget")}>
+            Budget
+          </Link>
+        </li>
+        <li className="mr-10">
           <Link href="/chart" className={getLinkClass("/chart")}>
             Chart
           </Link>

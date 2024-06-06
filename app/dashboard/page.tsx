@@ -1,4 +1,4 @@
-import PieChart from "@/features/Chart/PieChart"
+import PieChart from "@/features/chart/PieChart"
 import Transaction from "@/features/dashboard/Transaction"
 import DashboardList from "@/features/dashboard/DashboardList"
 import BalanceSheet from "@/features/dashboard/BalanceSheet"
