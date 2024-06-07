@@ -56,10 +56,10 @@ const ChartPage = () => {
           </Select>
         </div>
         <div className="grid grid-cols-2 gap-7">
-          <div className="">
+          <div>
             <PieChart selectedMonth={selectedMonth} />
           </div>
-          <div className="">
+          <div>
             <DonutChart selectedMonth={selectedMonth} />
           </div>
         </div>

@@ -13,7 +13,7 @@ const BalanceCard = ({ title, amount, currencySymbol, bgColor }: Props) => {
       <h2 className="text-2xl">{title}</h2>
       <p className="text-3xl mt-3">
         {currencySymbol}
-        {amount.toFixed(2)}
+        {amount !== undefined ? amount.toFixed(2) : "0.00"}
       </p>
     </div>
   );

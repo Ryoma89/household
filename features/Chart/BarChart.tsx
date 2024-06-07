@@ -24,8 +24,6 @@ ChartJS.register(
   Legend
 );
 
-const defaultColor = "rgba(169, 169, 169, 0.2)";
-
 type Props = {
   selectedMonth: string;
 }
