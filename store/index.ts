@@ -10,6 +10,8 @@ type ProfileType = Database["public"]["Tables"]["profiles"]["Row"];
 type StateType = {
   user: ProfileType;
   transactions: TransactionType[];
+  selectedMonth: string;
+  setSelectedMonth: (month: string) => void;
   setUser: (payload: ProfileType) => void;
   setTransactions: (payload: TransactionType[]) => void;
   addTransaction: (transaction: TransactionType) => void;
@@ -17,10 +19,18 @@ type StateType = {
   fetchUserProfile: (userId: string) => Promise<void>;
 };
 
+// 現在の年と月を取得する関数
+const getCurrentYearMonth = () => {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+};
+
 // Zustandのストアを作成
 const useStore = create<StateType>((set) => ({
   user: { id: "", email: "", name: "", introduce: "", avatar_url: "", primary_currency: "USD" },
   transactions: [],
+  selectedMonth: getCurrentYearMonth(), // 初期値として現在の年と月を設定
+  setSelectedMonth: (month) => set({ selectedMonth: month }),
   setUser: (payload) => set({ user: payload }),
   setTransactions: (payload) => set({ transactions: payload }),
   addTransaction: (transaction) =>

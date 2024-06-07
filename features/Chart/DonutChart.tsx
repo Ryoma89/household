@@ -20,12 +20,8 @@ ChartJS.register(
   ChartTitle
 );
 
-type Props = {
-  selectedMonth: string;
-}
-
-const DonutChart = ({ selectedMonth }: Props) => {
-  const { transactions } = useStore(); // グローバルストアからトランザクションデータを取得
+const DonutChart = () => {
+  const { transactions, selectedMonth } = useStore(); // グローバルストアからトランザクションデータを取得
   const [data, setData] = useState<PieChartData>({
     labels: [],
     datasets: [],

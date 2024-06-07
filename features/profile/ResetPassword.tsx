@@ -10,12 +10,12 @@ import * as z from 'zod'
 import type { Database } from '@/lib/database.types'
 type Schema = z.infer<typeof schema>
 
-// 入力データの検証ルールを定義
+// Define validation rules for input data
 const schema = z.object({
-  email: z.string().email({ message: 'メールアドレスの形式ではありません。' }),
+  email: z.string().email({ message: 'Invalid email format.' }),
 })
 
-// パスワードリセットページ
+// Password reset page
 const ResetPassword = () => {
   const router = useRouter()
   const supabase = createClientComponentClient<Database>()
@@ -27,32 +27,32 @@ const ResetPassword = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    // 初期値
+    // Initial values
     defaultValues: { email: '' },
-    // 入力値の検証
+    // Input validation
     resolver: zodResolver(schema),
   })
 
-  // 送信
+  // Submit
   const onSubmit: SubmitHandler<Schema> = async (data) => {
     setLoading(true)
     setMessage('')
 
     try {
-      // パスワードリセットメールを送信
+      // Send password reset email
       const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
         redirectTo: `${location.origin}/auth/resetPassword/confirm`,
       })
 
-      // エラーチェック
+      // Error check
       if (error) {
-        setMessage('エラーが発生しました。' + error.message)
+        setMessage('An error occurred: ' + error.message)
         return
       }
 
-      setMessage('パスワードリセットに必要なメールを送信しました。')
+      setMessage('An email to reset your password has been sent.')
     } catch (error) {
-      setMessage('エラーが発生しました。' + error)
+      setMessage('An error occurred: ' + error)
       return
     } finally {
       setLoading(false)
@@ -62,22 +62,22 @@ const ResetPassword = () => {
 
   return (
     <div className="max-w-[400px] mx-auto">
-      <div className="text-center font-bold text-xl mb-10">パスワードを忘れた場合</div>
+      <div className="text-center font-bold text-xl mb-10">Forgot Your Password</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* メールアドレス */}
+        {/* Email address */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">メールアドレス</div>
+          <div className="text-sm mb-1 font-bold">Email Address</div>
           <input
             type="email"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="メールアドレス"
+            placeholder="Email Address"
             id="email"
             {...register('email', { required: true })}
           />
           <div className="my-3 text-center text-sm text-red-500">{errors.email?.message}</div>
         </div>
 
-        {/* 送信ボタン */}
+        {/* Send button */}
         <div className="mb-5">
           {loading ? (
             <Loading />
@@ -86,7 +86,7 @@ const ResetPassword = () => {
               type="submit"
               className="font-bold bg-buttonPrimary hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
             >
-              送信
+              Send
             </button>
           )}
         </div>
