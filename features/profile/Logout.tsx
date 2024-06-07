@@ -6,31 +6,31 @@ import { useRouter } from 'next/navigation'
 import Loading from '@/app/loading'
 import type { Database } from '@/lib/database.types'
 
-// ログアウト
+// Logout
 const Logout = () => {
   const router = useRouter()
   const supabase = createClientComponentClient<Database>()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
-  // 送信
+  // Submit
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      // ログアウト
+      // Logout
       const { error } = await supabase.auth.signOut()
 
-      // エラーチェック
+      // Error check
       if (error) {
-        setMessage('エラーが発生しました。' + error.message)
+        setMessage('An error occurred: ' + error.message)
         return
       }
 
       router.push('/')
     } catch (error) {
-      setMessage('エラーが発生しました。' + error)
+      setMessage('An error occurred: ' + error)
       return
     } finally {
       setLoading(false)
@@ -40,8 +40,8 @@ const Logout = () => {
 
   return (
     <div>
-      <div className="text-center mb-5">ログアウトしますか？</div>
-      {/* ログアウトボタン */}
+      <div className="text-center mb-5">Do you want to logout?</div>
+      {/* Logout button */}
       <form onSubmit={onSubmit}>
         <div className="mb-5">
           {loading ? (
@@ -51,7 +51,7 @@ const Logout = () => {
               type="submit"
               className="font-bold bg-red hover:opacity-80 w-full rounded-full p-2 text-white text-sm"
             >
-              ログアウト
+              Logout
             </button>
           )}
         </div>

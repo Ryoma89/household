@@ -4,12 +4,8 @@ import useStore from "@/store";
 import { getCurrencySymbol } from "@/constants/currencies";
 import { supabase } from "@/utils/supabase";
 
-type BudgetCardProps = {
-  selectedMonth: string;
-};
-
-const BudgetCard = ({ selectedMonth }: BudgetCardProps) => {
-  const { user, transactions, fetchTransactions } = useStore();
+const BudgetCard = () => {
+  const { user, transactions, fetchTransactions, selectedMonth } = useStore();
   const [expense, setExpense] = useState(0);
   const [budgetBalance, setBudgetBalance] = useState(0);
   const [amount, setAmount] = useState(0);

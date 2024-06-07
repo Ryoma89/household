@@ -7,18 +7,13 @@ import { Trash2 } from "lucide-react";
 import { supabase } from "@/utils/supabase";
 import { format } from "date-fns";
 import { getCurrencySymbol } from "@/constants/currencies";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";  // Import the useToast hook
+import SelectMonth from "@/app/components/elements/SelectMonth";
 
-const getCurrentYearMonth = () => {
-  const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-};
 
 const DashboardList = () => {
-  const { user, transactions, fetchTransactions } = useStore();
+  const { user, transactions, fetchTransactions, selectedMonth } = useStore();
   const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
-  const [selectedMonth, setSelectedMonth] = useState(getCurrentYearMonth());
   const { toast } = useToast();  // Use the toast hook
 
   const fetchUserTransactions = useCallback(async () => {
@@ -64,29 +59,10 @@ const DashboardList = () => {
     transaction !== null && transaction !== undefined && transaction.date.startsWith(selectedMonth)
   );
 
-  const months = Array.from({ length: 12 }, (_, i) => {
-    const year = new Date().getFullYear();
-    const month = String(i + 1).padStart(2, '0');
-    return `${year}-${month}`;
-  });
-
   return (
     <section className="p-10">
       <Title title="Dashboard List" />
-      <div className="flex justify-center items-center mb-5 mt-10">
-        <Select onValueChange={(value) => setSelectedMonth(value)} value={selectedMonth}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue>{selectedMonth}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {months.map((month) => (
-              <SelectItem key={month} value={month}>
-                {month}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <SelectMonth /> {/* Use the SelectMonth component */}
       <div className="mt-5">
         <div className="flex justify-end mb-4">
           <button

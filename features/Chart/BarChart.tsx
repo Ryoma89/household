@@ -24,12 +24,8 @@ ChartJS.register(
   Legend
 );
 
-type Props = {
-  selectedMonth: string;
-}
-
-const BarChart = ({ selectedMonth }: Props) => {
-  const { transactions } = useStore();
+const BarChart = () => {
+  const { transactions, selectedMonth } = useStore();
   const [data, setData] = useState<PieChartData>({
     labels: [],
     datasets: [],

@@ -10,12 +10,12 @@ import * as z from 'zod'
 import type { Database } from '@/lib/database.types'
 type Schema = z.infer<typeof schema>
 
-// 入力データの検証ルールを定義
+// Define validation rules for input data
 const schema = z.object({
-  email: z.string().email({ message: 'メールアドレスの形式ではありません。' }),
+  email: z.string().email({ message: 'Invalid email format.' }),
 })
 
-// メールアドレス変更
+// Change email address
 const Email = ({ email }: { email: string }) => {
   const router = useRouter()
   const supabase = createClientComponentClient<Database>()
@@ -27,45 +27,44 @@ const Email = ({ email }: { email: string }) => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    // 初期値
+    // Initial values
     defaultValues: { email: '' },
-    // 入力値の検証
+    // Input validation
     resolver: zodResolver(schema),
   })
 
-  // 送信
+  // Submit
   const onSubmit: SubmitHandler<Schema> = async (data) => {
     setLoading(true)
     setMessage('')
 
     try {
-      // メールアドレス変更メールを送信
+      // Send email address change email
       const { error: updateUserError } = await supabase.auth.updateUser(
         { email: data.email },
         { emailRedirectTo: `${location.origin}/auth/login` }
       )
 
-      // エラーチェック
+      // Error check
       if (updateUserError) {
-        setMessage('エラーが発生しました。' + updateUserError.message)
+        setMessage('An error occurred: ' + updateUserError.message)
         return
       }
 
-      setMessage('確認用のURLを記載したメールを送信しました。')
+      setMessage('An email with a confirmation URL has been sent.')
 
-      // ログアウト
+      // Logout
       const { error: signOutError } = await supabase.auth.signOut()
 
-      // エラーチェック
+      // Error check
       if (signOutError) {
-        setMessage('エラーが発生しました。' + signOutError.message)
-
+        setMessage('An error occurred: ' + signOutError.message)
         return
       }
 
       router.push('/auth/login')
     } catch (error) {
-      setMessage('エラーが発生しました。' + error)
+      setMessage('An error occurred: ' + error)
       return
     } finally {
       setLoading(false)
@@ -75,28 +74,28 @@ const Email = ({ email }: { email: string }) => {
 
   return (
     <div>
-      <div className="text-center font-bold text-xl mb-10">メールアドレス変更</div>
+      <div className="text-center font-bold text-xl mb-10">Change Email Address</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* 現在のメールアドレス */}
+        {/* Current email address */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">現在のメールアドレス</div>
+          <div className="text-sm mb-1 font-bold">Current Email Address</div>
           <div>{email}</div>
         </div>
 
-        {/* 新しいメールアドレス */}
+        {/* New email address */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">新しいメールアドレス</div>
+          <div className="text-sm mb-1 font-bold">New Email Address</div>
           <input
             type="email"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="新しいメールアドレス"
+            placeholder="New Email Address"
             id="email"
             {...register('email', { required: true })}
           />
           <div className="my-3 text-center text-sm text-red-500">{errors.email?.message}</div>
         </div>
 
-        {/* 変更ボタン */}
+        {/* Change button */}
         <div className="mb-5">
           {loading ? (
             <Loading />
@@ -105,7 +104,7 @@ const Email = ({ email }: { email: string }) => {
               type="submit"
               className="font-bold bg-buttonPrimary hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
             >
-              変更
+              Change
             </button>
           )}
         </div>

@@ -21,16 +21,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useStore from "@/store";
 import { supabase } from "@/utils/supabase";
 import { Input } from "@/components/ui/input";
-import { currencies } from "@/constants/currencies";
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-type Props = {
-  selectedMonth: string;
-};
 
 // フォームのスキーマを定義
 const formSchema = z.object({
@@ -38,8 +33,8 @@ const formSchema = z.object({
   amount: z.preprocess((val) => parseFloat(val as string), z.number()),
 });
 
-const BudgetInput = ({ selectedMonth }: Props) => {
-  const { user, fetchUserProfile } = useStore();
+const BudgetInput = () => {
+  const { user, selectedMonth, fetchUserProfile } = useStore();
   const [login, setLogin] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // モーダルの表示状態を管理
 

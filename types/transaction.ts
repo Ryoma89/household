@@ -49,3 +49,7 @@ export interface Balance {
   balance: number;
 }
 
+export type IncomeData = { [key in IncomeCategory]?: number };
+
+export type ExpenseData = { [key in ExpenseCategory]?: number };
+

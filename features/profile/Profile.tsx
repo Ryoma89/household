@@ -12,18 +12,18 @@ import type { Database } from '@/lib/database.types';
 import useStore from '@/store';
 import { currencies } from '@/constants/currencies';
 import { getExchangeRate } from '../dashboard/Transaction';
-import type { TransactionType } from '@/types/transaction'; // TransactionTypeをインポート
+import type { TransactionType } from '@/types/transaction'; // Import TransactionType
 
 type Schema = z.infer<typeof schema>;
 
-// 入力データの検証ルールを定義
+// Define validation rules for input data
 const schema = z.object({
-  name: z.string().min(2, { message: '2文字以上入力する必要があります。' }),
+  name: z.string().min(2, { message: 'Must be at least 2 characters.' }),
   introduce: z.string().min(0),
-  primary_currency: z.string().min(3, { message: '主な通貨を選択してください。' }), // 追加
+  primary_currency: z.string().min(3, { message: 'Please select a primary currency.' }), // Added
 });
 
-// プロフィール
+// Profile
 const Profile = () => {
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
@@ -40,89 +40,89 @@ const Profile = () => {
     formState: { errors },
     setValue,
   } = useForm({
-    // 初期値
+    // Initial values
     defaultValues: {
       name: user.name ? user.name : '',
       introduce: user.introduce ? user.introduce : '',
-      primary_currency: user.primary_currency ? user.primary_currency : 'USD', // 初期値にprimary_currencyを追加
+      primary_currency: user.primary_currency ? user.primary_currency : 'USD', // Added primary_currency to initial values
     },
-    // 入力値の検証
+    // Input validation
     resolver: zodResolver(schema),
   });
 
-  // アバター画像の取得
+  // Get avatar image
   useEffect(() => {
     if (user && user.avatar_url) {
       setAvatarUrl(user.avatar_url);
     }
   }, [user]);
 
-  // ログイン状態を監視し、プロファイルをフェッチ
+  // Monitor login status and fetch profile
   useEffect(() => {
     if (user.id) {
       fetchUserProfile(user.id);
     }
   }, [user.id, fetchUserProfile]);
 
-  // 画像アップロード
+  // Upload image
   const onUploadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     setFileMessage('');
 
-    // ファイルが選択されていない場合
+    // If no file is selected
     if (!files || files?.length == 0) {
-      setFileMessage('画像をアップロードしてください。');
+      setFileMessage('Please upload an image.');
       return;
     }
 
     const fileSize = files[0]?.size / 1024 / 1024; // size in MB
     const fileType = files[0]?.type; // MIME type of the file
 
-    // 画像サイズが2MBを超える場合
+    // If image size exceeds 2MB
     if (fileSize > 2) {
-      setFileMessage('画像サイズを2MB以下にする必要があります。');
+      setFileMessage('Image size must be less than 2MB.');
       return;
     }
 
-    // ファイル形式がjpgまたはpngでない場合
+    // If file format is not jpg or png
     if (fileType !== 'image/jpeg' && fileType !== 'image/png') {
-      setFileMessage('画像はjpgまたはpng形式である必要があります。');
+      setFileMessage('Image must be in jpg or png format.');
       return;
     }
 
-    // 画像をセット
+    // Set image
     setAvatar(files[0]);
   }, []);
 
-  // 送信
+  // Submit
   const onSubmit: SubmitHandler<Schema> = async (data) => {
     setLoading(true);
     setMessage('');
 
     try {
       let avatar_url = user.avatar_url;
-      const oldPrimaryCurrency = user.primary_currency; // 以前の主な通貨
+      const oldPrimaryCurrency = user.primary_currency; // Previous primary currency
 
       if (avatar) {
-        // supabaseストレージに画像アップロード
+        // Upload image to supabase storage
         const { data: storageData, error: storageError } = await supabase.storage
           .from('profile')
           .upload(`${user.id}/${uuidv4()}`, avatar);
 
-        // エラーチェック
+        // Error check
         if (storageError) {
-          setMessage('エラーが発生しました。' + storageError.message);
+          setMessage('An error occurred: ' + storageError.message);
           return;
         }
 
         if (avatar_url) {
           const fileName = avatar_url.split('/').slice(-1)[0];
 
-          // 古い画像を削除
+          // Delete old image
           await supabase.storage.from('profile').remove([`${user.id}/${fileName}`]);
         }
 
-        // 画像のURLを取得
+        // Get image URL
         const { data: urlData } = await supabase.storage
           .from('profile')
           .getPublicUrl(storageData.path);
@@ -130,24 +130,24 @@ const Profile = () => {
         avatar_url = urlData.publicUrl;
       }
 
-      // プロフィールアップデート
+      // Update profile
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
           name: data.name,
           introduce: data.introduce,
           avatar_url,
-          primary_currency: data.primary_currency, // 追加
+          primary_currency: data.primary_currency, // Added
         })
         .eq('id', user.id);
 
-      // エラーチェック
+      // Error check
       if (updateError) {
-        setMessage('エラーが発生しました。' + updateError.message);
+        setMessage('An error occurred: ' + updateError.message);
         return;
       }
 
-      // 主な通貨が変更された場合、トランザクションの変換を実行
+      // If primary currency has changed, perform transaction conversion
       if (data.primary_currency !== oldPrimaryCurrency) {
         const { data: transactions, error: fetchError } = await supabase
           .from('transactions')
@@ -168,12 +168,12 @@ const Profile = () => {
               const convertedAmount = transaction.amount * exchangeRate;
               return {
                 ...transaction,
-                converted_amount: convertedAmount, // 通貨は変更しない
+                converted_amount: convertedAmount, // Do not change the currency
               };
             })
           );
 
-          // トランザクションを更新
+          // Update transactions
           const { error: updateTransactionsError } = await supabase
             .from('transactions')
             .upsert(updatedTransactions);
@@ -182,14 +182,14 @@ const Profile = () => {
             console.error('Error updating transactions:', updateTransactionsError);
           }
 
-          // Zustandのstoreを更新
+          // Update Zustand store
           setTransactions(updatedTransactions);
         }
       }
 
-      setMessage('プロフィールを更新しました。');
+      setMessage('Profile updated successfully.');
     } catch (error) {
-      setMessage('エラーが発生しました。' + error);
+      setMessage('An error occurred: ' + error);
       return;
     } finally {
       setLoading(false);
@@ -199,9 +199,9 @@ const Profile = () => {
 
   return (
     <div>
-      <div className="text-center font-bold text-xl mb-10">プロフィール</div>
+      <div className="text-center font-bold text-xl mb-10">Profile</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* アバター画像 */}
+        {/* Avatar image */}
         <div className="mb-5">
           <div className="flex flex-col text-sm items-center justify-center mb-5">
             <div className="relative w-24 h-24 mb-5">
@@ -212,13 +212,13 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* 名前 */}
+        {/* Name */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">名前</div>
+          <div className="text-sm mb-1 font-bold">Name</div>
           <input
             type="text"
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="名前"
+            placeholder="Name"
             id="name"
             {...register('name', { required: true })}
             required
@@ -226,21 +226,21 @@ const Profile = () => {
           <div className="my-3 text-center text-sm text-red-500">{errors.name?.message}</div>
         </div>
 
-        {/* 自己紹介 */}
+        {/* Introduction */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">自己紹介</div>
+          <div className="text-sm mb-1 font-bold">Introduction</div>
           <textarea
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
-            placeholder="自己紹介"
+            placeholder="Introduction"
             id="introduce"
             {...register('introduce')}
             rows={5}
           />
         </div>
 
-        {/* 主な通貨の選択 */}
+        {/* Primary currency selection */}
         <div className="mb-5">
-          <div className="text-sm mb-1 font-bold">主な通貨</div>
+          <div className="text-sm mb-1 font-bold">Primary Currency</div>
           <select
             className="border rounded-md w-full py-2 px-3 focus:outline-none focus:border-sky-500"
             {...register('primary_currency', { required: true })}
@@ -254,7 +254,7 @@ const Profile = () => {
           <div className="my-3 text-center text-sm text-red-500">{errors.primary_currency?.message}</div>
         </div>
 
-        {/* 変更ボタン */}
+        {/* Change button */}
         <div className="mb-5">
           {loading ? (
             <Loading />
@@ -263,13 +263,13 @@ const Profile = () => {
               type="submit"
               className="font-bold bg-buttonPrimary hover:brightness-95 w-full rounded-full p-2 text-white text-sm"
             >
-              変更
+              Change
             </button>
           )}
         </div>
       </form>
 
-      {/* メッセージ */}
+      {/* Message */}
       {message && <div className="my-5 text-center text-red-500 mb-5">{message}</div>}
     </div>
   );

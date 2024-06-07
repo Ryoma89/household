@@ -44,12 +44,8 @@ const expenseColors: { [key in ExpenseCategory]: string } = {
 
 const defaultColor = "rgba(169, 169, 169, 1)";
 
-type Props = {
-  selectedMonth: string;
-}
-
-const PieChart = ({ selectedMonth }: Props) => {
-  const { user, transactions, fetchTransactions } = useStore();
+const PieChart = () => {
+  const { user, transactions, fetchTransactions, selectedMonth } = useStore();
   const [selectedType, setSelectedType] = useState<"Income" | "Expense">("Income");
   const [data, setData] = useState<PieChartData>({
     labels: [],
