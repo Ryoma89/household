@@ -9,7 +9,7 @@ type Props = {
 
 const BalanceCard = ({ title, amount, currencySymbol, bgColor }: Props) => {
   return (
-    <div className={`w-full my-2 p-5 text-center text-white rounded-lg ${bgColor}`}>
+    <div className={`w-full my-5 p-5 text-center text-white rounded-lg ${bgColor}`}>
       <h2 className="text-2xl">{title}</h2>
       <p className="text-3xl mt-3">
         {currencySymbol}

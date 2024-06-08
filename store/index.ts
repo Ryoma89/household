@@ -17,7 +17,15 @@ type StateType = {
   addTransaction: (transaction: TransactionType) => void;
   fetchTransactions: (userId: string) => Promise<void>;
   fetchUserProfile: (userId: string) => Promise<void>;
+  fetchBudgetAmount: () => Promise<void>;
+  budgetAmount: number;
+  budgetBalance: number;
+  expense: number;
+  setExpense: (expense: number) => void; // 追加
 };
+
+
+
 
 // 現在の年と月を取得する関数
 const getCurrentYearMonth = () => {
@@ -26,10 +34,13 @@ const getCurrentYearMonth = () => {
 };
 
 // Zustandのストアを作成
-const useStore = create<StateType>((set) => ({
+const useStore = create<StateType>((set, get) => ({
   user: { id: "", email: "", name: "", introduce: "", avatar_url: "", primary_currency: "USD" },
   transactions: [],
-  selectedMonth: getCurrentYearMonth(), // 初期値として現在の年と月を設定
+  selectedMonth: getCurrentYearMonth(),
+  budgetAmount: 0,
+  budgetBalance: 0,
+  expense: 0,
   setSelectedMonth: (month) => set({ selectedMonth: month }),
   setUser: (payload) => set({ user: payload }),
   setTransactions: (payload) => set({ transactions: payload }),
@@ -59,6 +70,44 @@ const useStore = create<StateType>((set) => ({
       set({ user: data });
     }
   },
+  fetchBudgetAmount: async () => {
+    const user = get().user;
+    const selectedMonth = get().selectedMonth;
+    const expense = get().expense;
+
+    if (!user.id) {
+      console.error("Error: user.id is undefined");
+      return;
+    }
+
+    try {
+      const { data, error, status } = await supabase
+        .from("budgets")
+        .select("amount")
+        .eq("user_id", user.id)
+        .eq("month", selectedMonth)
+        .single();
+
+      if (error && status !== 406) {
+        console.error("Error fetching budget amount:", error);
+        return;
+      }
+
+      if (data) {
+        set({ budgetAmount: data.amount });
+        set({ budgetBalance: data.amount - expense });
+      } else {
+        console.log("No budget data found for the selected month.");
+        set({ budgetAmount: 0 });
+        set({ budgetBalance: 0 - expense });
+      }
+    } catch (error) {
+      console.error("Error in fetchBudgetAmount:", error);
+      set({ budgetAmount: 0 });
+      set({ budgetBalance: 0 - expense });
+    }
+  },
+  setExpense: (expense) => set({ expense }) // 追加
 }));
 
 export default useStore;

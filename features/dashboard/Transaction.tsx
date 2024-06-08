@@ -234,7 +234,7 @@ const Transaction = () => {
                       <FormControl>
                         <Button
                           variant={"outline"}
-                          className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn("w-[180px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
                           onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                         >
                           {field.value ? format(field.value, "yyyy-MM-dd") : <span>Pick a date</span>}

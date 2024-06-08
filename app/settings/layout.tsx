@@ -14,22 +14,22 @@ import { Separator } from '@/components/ui/separator'
 // ナビゲーション
 const subNavigation = [
   {
-    name: 'プロフィール',
+    name: 'Profile',
     icon: UserCircleIcon,
     href: '/settings/profile',
   },
   {
-    name: 'メールアドレス',
+    name: 'Email',
     icon: EnvelopeIcon,
     href: '/settings/email',
   },
   {
-    name: 'パスワード',
+    name: 'Password',
     icon: KeyIcon,
     href: '/settings/password',
   },
   {
-    name: 'ログアウト',
+    name: 'Logout',
     icon: ArrowLeftOnRectangleIcon,
     href: '/settings/logout',
   },

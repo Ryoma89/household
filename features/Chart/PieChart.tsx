@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,7 +14,8 @@ import Title from "@/app/components/elements/Title";
 import TypeButton from "@/app/components/elements/TypeButton";
 import useStore from "@/store";
 import { PieChartData } from "@/types/cart";
-import { IncomeCategory, ExpenseCategory } from "@/types/transaction";
+import { useFetchTransactions } from "@/hooks/useFetchTransactions";
+import { transformToPieData } from "@/utils/transaformData";
 
 ChartJS.register(
   CategoryScale,
@@ -25,54 +26,15 @@ ChartJS.register(
   Legend
 );
 
-const incomeColors: { [key in IncomeCategory]: string } = {
-  salary: "rgba(255, 99, 132, 1)",
-  allowance: "rgba(54, 162, 235, 1)",
-  rent: "rgba(255, 206, 86, 1)",
-  stock: "rgba(75, 192, 192, 1)",
-  investment: "rgba(153, 102, 255, 1)",
-};
-
-const expenseColors: { [key in ExpenseCategory]: string } = {
-  food: "rgba(255, 99, 132, 1)",
-  daily: "rgba(54, 162, 235, 1)",
-  rent: "rgba(255, 206, 86, 1)",
-  enjoy: "rgba(75, 192, 192, 1)",
-  entertainment: "rgba(153, 102, 255, 1)",
-  transportation: "rgba(255, 159, 64, 1)",
-};
-
-const defaultColor = "rgba(169, 169, 169, 1)";
-
 const PieChart = () => {
-  const { user, transactions, fetchTransactions, selectedMonth } = useStore();
+  const { user, transactions, selectedMonth } = useStore();
   const [selectedType, setSelectedType] = useState<"Income" | "Expense">("Income");
   const [data, setData] = useState<PieChartData>({
     labels: [],
     datasets: [],
   });
-  const [loading, setLoading] = useState(true);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      if (!user?.id) {
-        console.error("User ID not available");
-        return;
-      }
-      await fetchTransactions(user.id);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchTransactions, user?.id]);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchData();
-    }
-  }, [fetchData, user?.id]);
+  const loading = useFetchTransactions(user?.id);
 
   useEffect(() => {
     if (!transactions || transactions.length === 0) {
@@ -83,8 +45,6 @@ const PieChart = () => {
       return;
     }
 
-    console.log("Transactions:", transactions);
-
     const filteredTransactions = transactions.filter(
       (transaction) =>
         transaction &&
@@ -92,10 +52,7 @@ const PieChart = () => {
         transaction.date.startsWith(selectedMonth)
     );
 
-    console.log("Filtered Transactions:", filteredTransactions);
-
     if (filteredTransactions.length === 0) {
-      console.error("No transactions found for the selected type and month");
       setData({
         labels: [],
         datasets: [],
@@ -103,47 +60,13 @@ const PieChart = () => {
       return;
     }
 
-    const categories = filteredTransactions.map((transaction) => transaction.category);
-    const uniqueCategories = Array.from(new Set(categories));
-    const dataAmounts = uniqueCategories.map(
-      (category) =>
-        filteredTransactions
-          .filter((transaction) => transaction.category === category)
-          .reduce((total, transaction) => total + Number(transaction.converted_amount), 0)
-    );
+    const pieData = transformToPieData(filteredTransactions);
 
-    const backgroundColors = uniqueCategories.map((category) => {
-      if (selectedType === "Income") {
-        return incomeColors[category as IncomeCategory] || defaultColor;
-      } else {
-        return expenseColors[category as ExpenseCategory] || defaultColor;
-      }
-    });
+    const datasetIndex = selectedType === "Income" ? 0 : 1;
 
     setData({
-      labels: uniqueCategories,
-      datasets: [
-        {
-          label: selectedType,
-          data: dataAmounts,
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors.map(color => color.replace("0.2", "1")),
-          borderWidth: 1,
-        },
-      ],
-    });
-
-    console.log("Data fetched successfully:", {
-      labels: uniqueCategories,
-      datasets: [
-        {
-          label: selectedType,
-          data: dataAmounts,
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors.map(color => color.replace("0.2", "1")),
-          borderWidth: 1,
-        },
-      ],
+      labels: pieData.labels,
+      datasets: [pieData.datasets[datasetIndex]],
     });
   }, [selectedType, selectedMonth, transactions]);
 
@@ -167,7 +90,7 @@ const PieChart = () => {
           <Pie data={data} options={options} />
         </div>
       ) : (
-        <p className="mt-5 text-center">No transactions found for the selected month.</p>
+        <p className="mt-5 text-center">No transactions found for the selected type and month.</p>
       )}
     </section>
   );
