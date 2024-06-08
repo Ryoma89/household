@@ -54,3 +54,79 @@ export const transformToPieData = (transactions: TransactionType[]): PieChartDat
     ],
   };
 };
+
+export const transformToBarData = (transactions: TransactionType[], selectedMonth: string): PieChartData => {
+  const filteredTransactions = transactions.filter(
+    (transaction) =>
+      transaction &&
+      transaction.date.startsWith(selectedMonth)
+  );
+
+  const dailyData: { [key: string]: { Income: number; Expense: number } } = filteredTransactions.reduce((acc, transaction) => {
+    const date = transaction.date.split('T')[0];
+    if (!acc[date]) {
+      acc[date] = { Income: 0, Expense: 0 };
+    }
+    if (transaction.type === "Income" || transaction.type === "Expense") {
+      acc[date][transaction.type as "Income" | "Expense"] += Number(transaction.converted_amount);
+    }
+    return acc;
+  }, {} as { [key: string]: { Income: number; Expense: number } });
+
+  const dates = Object.keys(dailyData).sort();
+  const incomeData = dates.map(date => dailyData[date].Income);
+  const expenseData = dates.map(date => dailyData[date].Expense);
+
+  return {
+    labels: dates,
+    datasets: [
+      {
+        label: 'Income',
+        data: incomeData,
+        backgroundColor: dates.map(() => "rgba(75, 192, 192, 1)"),  // 変更
+        borderColor: dates.map(() => "rgba(75, 192, 192, 1)"),  // 変更
+        borderWidth: 1,
+      },
+      {
+        label: 'Expense',
+        data: expenseData,
+        backgroundColor: dates.map(() => "rgba(255, 99, 132, 1)"),  // 変更
+        borderColor: dates.map(() => "rgba(255, 99, 132, 1)"),  // 変更
+        borderWidth: 1,
+      },
+    ],
+  };
+};
+
+export const transformToDoughnutData = (transactions: TransactionType[], selectedMonth: string) => {
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.date.startsWith(selectedMonth)
+  );
+
+  const income = filteredTransactions
+    .filter((transaction) => transaction.type === "Income")
+    .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
+
+  const expense = filteredTransactions
+    .filter((transaction) => transaction.type === "Expense")
+    .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
+
+  return {
+    labels: ['Income', 'Expense'],
+    datasets: [
+      {
+        label: 'Income vs Expense',
+        data: [income, expense],
+        backgroundColor: [
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderColor: [
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+};

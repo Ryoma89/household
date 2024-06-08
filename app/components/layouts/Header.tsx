@@ -25,6 +25,7 @@ const Header = ({
       name: user && profile ? profile.name : "",
       introduce: user && profile ? profile.introduce : "",
       avatar_url: user && profile ? profile.avatar_url : "",
+      primary_currency: user && profile ? profile.primary_currency : "",
     });
   }, [user, setUser, profile]);
 

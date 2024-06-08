@@ -34,7 +34,7 @@ const formSchema = z.object({
 });
 
 const BudgetInput = () => {
-  const { user, selectedMonth, fetchUserProfile } = useStore();
+  const { user, selectedMonth, fetchUserProfile, fetchBudgetAmount } = useStore();
   const [login, setLogin] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // モーダルの表示状態を管理
 
@@ -108,6 +108,7 @@ const BudgetInput = () => {
     }
 
     console.log("Budget operation completed successfully");
+    await fetchBudgetAmount(); // データをフェッチ
     setIsOpen(false); // モーダルを閉じる
   }
 

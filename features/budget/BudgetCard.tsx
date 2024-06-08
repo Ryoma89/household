@@ -1,73 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import BalanceCard from "@/app/components/elements/BalanceCard";
 import useStore from "@/store";
 import { getCurrencySymbol } from "@/constants/currencies";
-import { supabase } from "@/utils/supabase";
 
 const BudgetCard = () => {
-  const { user, transactions, fetchTransactions, selectedMonth } = useStore();
-  const [expense, setExpense] = useState(0);
-  const [budgetBalance, setBudgetBalance] = useState(0);
-  const [amount, setAmount] = useState(0);
-
-  const saveBudget = async () => {
-    try {
-      const { error } = await supabase
-        .from("budgets")
-        .upsert([
-          {
-            user_id: user.id,
-            month: selectedMonth,
-            amount: amount,
-            currency: user.primary_currency,
-            updated_at: new Date(),
-          },
-        ]);
-
-      if (error) {
-        console.error("Error updating budget:", error);
-        return;
-      }
-
-      setBudgetBalance(amount - expense);
-    } catch (error) {
-      console.error("Error in saveBudget:", error);
-    }
-  };
-
-  const fetchBudgetAmount = async () => {
-    if (!user.id) {
-      console.error("Error: user.id is undefined");
-      return;
-    }
-
-    try {
-      const { data, error, status } = await supabase
-        .from("budgets")
-        .select("amount")
-        .eq("user_id", user.id)
-        .eq("month", selectedMonth)
-        .single();
-
-      if (error && status !== 406) {
-        console.error("Error fetching budget amount:", error);
-        return;
-      }
-
-      if (data) {
-        setAmount(data.amount);
-        setBudgetBalance(data.amount - expense);
-      } else {
-        console.log("No budget data found for the selected month.");
-        setAmount(0);
-        setBudgetBalance(0 - expense);
-      }
-    } catch (error) {
-      console.error("Error in fetchBudgetAmount:", error);
-      setAmount(0);
-      setBudgetBalance(0 - expense);
-    }
-  };
+  const { user, transactions, fetchTransactions, selectedMonth, budgetAmount, budgetBalance, fetchBudgetAmount, expense, setExpense } = useStore();
 
   const calculateExpenses = useCallback(() => {
     try {
@@ -84,22 +21,23 @@ const BudgetCard = () => {
           .reduce((sum, transaction) => sum + Number(transaction.converted_amount), 0);
 
         setExpense(expenseSum);
-        setBudgetBalance(amount - expenseSum);
+      } else {
+        setExpense(0);
       }
     } catch (error) {
       console.error("Error in calculateExpenses:", error);
     }
-  }, [transactions, selectedMonth, amount]);
+  }, [transactions, selectedMonth, setExpense]);
 
   useEffect(() => {
     if (user.id) {
-      fetchTransactions(user.id).then(() => {
-        fetchBudgetAmount().then(() => {
-          calculateExpenses();
-        });
-      });
+      fetchTransactions(user.id);
     }
   }, [selectedMonth, user.id, fetchTransactions]);
+
+  useEffect(() => {
+    fetchBudgetAmount();
+  }, [selectedMonth, fetchBudgetAmount]);
 
   useEffect(() => {
     calculateExpenses();
@@ -110,7 +48,7 @@ const BudgetCard = () => {
       <div className="md:col-span-2 w-1/3">
         <BalanceCard
           title="Budget"
-          amount={amount}
+          amount={budgetAmount}
           currencySymbol={getCurrencySymbol(user.primary_currency)}
           bgColor="bg-blue"
         />

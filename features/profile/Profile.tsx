@@ -108,6 +108,7 @@ const Profile = () => {
         const { data: storageData, error: storageError } = await supabase.storage
           .from('profile')
           .upload(`${user.id}/${uuidv4()}`, avatar);
+          console.log("data", storageData)
 
         // Error check
         if (storageError) {

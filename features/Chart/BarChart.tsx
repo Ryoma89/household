@@ -13,6 +13,7 @@ import {
 import Title from "@/app/components/elements/Title";
 import useStore from "@/store";
 import { PieChartData } from "@/types/cart";
+import { transformToBarData } from "@/utils/transaformData";
 
 // ChartJSの必要なコンポーネントを登録
 ChartJS.register(
@@ -32,48 +33,10 @@ const BarChart = () => {
   });
 
   useEffect(() => {
-    if (!transactions) return;
-
-    const filteredTransactions = transactions.filter(
-      (transaction) =>
-        transaction &&
-        transaction.date.startsWith(selectedMonth)
-    );
-
-    const dailyData: { [key: string]: { Income: number; Expense: number } } = filteredTransactions.reduce((acc, transaction) => {
-      const date = transaction.date.split('T')[0];
-      if (!acc[date]) {
-        acc[date] = { Income: 0, Expense: 0 };
-      }
-      if (transaction.type === "Income" || transaction.type === "Expense") {
-        acc[date][transaction.type as "Income" | "Expense"] += Number(transaction.converted_amount); // converted_amountを使用
-      }
-      return acc;
-    }, {} as { [key: string]: { Income: number; Expense: number } });
-
-    const dates = Object.keys(dailyData).sort();
-    const incomeData = dates.map(date => dailyData[date].Income);
-    const expenseData = dates.map(date => dailyData[date].Expense);
-
-    setData({
-      labels: dates,
-      datasets: [
-        {
-          label: 'Income',
-          data: incomeData,
-          backgroundColor: Array(incomeData.length).fill("rgba(75, 192, 192, 1)"),
-          borderColor: Array(incomeData.length).fill("rgba(75, 192, 192, 1)"),
-          borderWidth: 1,
-        },
-        {
-          label: 'Expense',
-          data: expenseData,
-          backgroundColor: Array(expenseData.length).fill("rgba(255, 99, 132, 1)"),
-          borderColor: Array(expenseData.length).fill("rgba(255, 99, 132, 1)"),
-          borderWidth: 1,
-        },
-      ],
-    });
+    if (transactions) {
+      const barData = transformToBarData(transactions, selectedMonth);
+      setData(barData);
+    }
   }, [transactions, selectedMonth]);
 
   if (!transactions) {
@@ -85,7 +48,7 @@ const BarChart = () => {
       <Title title="Bar Chart" />
       {data.labels.length > 0 ? (
         <div className="mt-10 h-[400px] w-full flex flex-col items-center">
-            <Bar data={data} options={{ responsive: true, maintainAspectRatio: false }} />
+          <Bar data={data} options={{ responsive: true, maintainAspectRatio: false }} />
         </div>
       ) : (
         <p className="mt-5 text-center">No transactions found for the selected month.</p>

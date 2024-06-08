@@ -11,6 +11,7 @@ import {
 import Title from "@/app/components/elements/Title";
 import useStore from "@/store";
 import { PieChartData } from "@/types/cart";
+import { transformToDoughnutData } from "@/utils/transaformData";
 
 // ChartJSの必要なコンポーネントを登録
 ChartJS.register(
@@ -28,50 +29,11 @@ const DonutChart = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!transactions) return; // transactionsが初期化されるのを待つ
-
-      try {
-        // 選択された月に一致するトランザクションをフィルタリング
-        const filteredTransactions = transactions.filter(
-          (transaction) => transaction.date.startsWith(selectedMonth)
-        );
-
-        // 収入と支出を集計
-        const income = filteredTransactions
-          .filter((transaction) => transaction.type === "Income")
-          .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
-
-        const expense = filteredTransactions
-          .filter((transaction) => transaction.type === "Expense")
-          .reduce((acc, transaction) => acc + Number(transaction.converted_amount), 0);
-
-        // グラフデータを設定
-        setData({
-          labels: ['Income', 'Expense'],
-          datasets: [
-            {
-              label: 'Income vs Expense',
-              data: [income, expense],
-              backgroundColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 99, 132, 1)',
-              ],
-              borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 99, 132, 1)',
-              ],
-              borderWidth: 1,
-            },
-          ],
-        });
-      } catch (error) {
-        console.error("Error fetching transactions:", error); // エラーが発生した場合にコンソールに出力
-      }
-    };
-
-    fetchData();
-  }, [transactions, selectedMonth]); // transactionsとselectedMonthが変更されたときに再実行
+    if (transactions) {
+      const doughnutData = transformToDoughnutData(transactions, selectedMonth);
+      setData(doughnutData);
+    }
+  }, [transactions, selectedMonth]);
 
   // グラフのオプション設定
   const options = {
@@ -95,7 +57,7 @@ const DonutChart = () => {
           <Doughnut data={data} options={options} /> {/* Donut Chartを表示 */}
         </div>
       ) : (
-        <p className="mt-5">No transactions found for the selected month.</p> // トランザクションが見つからない場合
+        <p className="mt-5 text-center">No transactions found for the selected type and month.</p> // トランザクションが見つからない場合
       )}
     </section>
   );
