@@ -21,11 +21,9 @@ type StateType = {
   budgetAmount: number;
   budgetBalance: number;
   expense: number;
-  setExpense: (expense: number) => void; // 追加
+  setExpense: (expense: number) => void;
+  setBudgetBalance: () => void; // 追加
 };
-
-
-
 
 // 現在の年と月を取得する関数
 const getCurrentYearMonth = () => {
@@ -73,7 +71,6 @@ const useStore = create<StateType>((set, get) => ({
   fetchBudgetAmount: async () => {
     const user = get().user;
     const selectedMonth = get().selectedMonth;
-    const expense = get().expense;
 
     if (!user.id) {
       console.error("Error: user.id is undefined");
@@ -95,19 +92,22 @@ const useStore = create<StateType>((set, get) => ({
 
       if (data) {
         set({ budgetAmount: data.amount });
-        set({ budgetBalance: data.amount - expense });
       } else {
         console.log("No budget data found for the selected month.");
         set({ budgetAmount: 0 });
-        set({ budgetBalance: 0 - expense });
       }
+      get().setBudgetBalance(); // 追加
     } catch (error) {
       console.error("Error in fetchBudgetAmount:", error);
       set({ budgetAmount: 0 });
-      set({ budgetBalance: 0 - expense });
+      get().setBudgetBalance(); // 追加
     }
   },
-  setExpense: (expense) => set({ expense }) // 追加
+  setExpense: (expense) => set({ expense }),
+  setBudgetBalance: () => {
+    const { budgetAmount, expense } = get();
+    set({ budgetBalance: budgetAmount - expense });
+  } // 追加
 }));
 
 export default useStore;
