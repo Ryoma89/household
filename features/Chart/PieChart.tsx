@@ -80,7 +80,7 @@ const PieChart = () => {
   }
 
   return (
-    <section className="p-10 bg-white rounded-lg h-[600px]">
+    <div className="p-10 bg-white rounded-lg h-[600px]">
       <Title title="PieChart" />
       <div className="flex flex-col items-center justify-center">
         <TypeButton setSelectedType={setSelectedType} />
@@ -92,7 +92,7 @@ const PieChart = () => {
       ) : (
         <p className="mt-5 text-center">No transactions found for the selected type and month.</p>
       )}
-    </section>
+    </div>
   );
 };
 

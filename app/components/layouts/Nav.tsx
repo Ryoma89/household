@@ -11,7 +11,7 @@ const Nav = () => {
   };
 
   return (
-    <nav className="pb-5">
+    <nav className="pb-5 hidden sm:block">
       <ul className="flex justify-center items-center">
         <li className="mr-10">
           <Link href="/dashboard" className={getLinkClass("/dashboard")}>

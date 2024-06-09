@@ -60,7 +60,7 @@ const DashboardList = () => {
   );
 
   return (
-    <section className="p-10">
+    <section className="sm:p-10 p-7">
       <Title title="Dashboard List" />
       <SelectMonth /> {/* Use the SelectMonth component */}
       <div className="mt-5">
@@ -109,7 +109,7 @@ const DashboardList = () => {
                           onChange={() => handleCheckboxChange(transaction.id)}
                         />
                       </TableCell>
-                      <TableCell>{format(new Date(transaction.date), "yyyy-MM-dd")}</TableCell>
+                      <TableCell className="sm:text-sm text-xs">{format(new Date(transaction.date), "yyyy-MM-dd")}</TableCell>
                       <TableCell>{transaction.type}</TableCell>
                       <TableCell>{transaction.category}</TableCell>
                       <TableCell>{transaction.currency}</TableCell>

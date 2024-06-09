@@ -50,7 +50,7 @@ const DonutChart = () => {
   };
 
   return (
-    <section className="p-10 bg-white rounded-lg h-[600px]">
+    <div className="p-10 bg-white rounded-lg h-[600px]">
       <Title title="Donut Chart" />
       {data.labels.length > 0 ? (
         <div className="mt-16 h-[400px] w-full flex flex-col items-center">
@@ -59,7 +59,7 @@ const DonutChart = () => {
       ) : (
         <p className="mt-5 text-center">No transactions found for the selected type and month.</p> // トランザクションが見つからない場合
       )}
-    </section>
+    </div>
   );
 };
 

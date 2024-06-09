@@ -208,7 +208,7 @@ const Profile = () => {
             <div className="relative w-24 h-24 mb-5">
               <Image src={avatarUrl} className="rounded-full object-cover" alt="avatar" fill />
             </div>
-            <input type="file" id="avatar" onChange={onUploadImage} />
+            <input type="file" id="avatar" onChange={onUploadImage}/>
             {fileMessage && <div className="text-center text-red-500 my-5">{fileMessage}</div>}
           </div>
         </div>
