@@ -61,8 +61,8 @@ const BudgetCard = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center">
-        <div className="md:col-span-2 w-1/3">
+      <div className="sm:flex sm:justify-center sm:items-center mt-10 sm:mt-0">
+        <div className="md:col-span-2 sm:w-1/3">
           <BalanceCard
             title="Budget"
             amount={budgetAmount}
@@ -70,8 +70,8 @@ const BudgetCard = () => {
             bgColor="bg-blue"
           />
         </div>
-        <div className="text-center text-4xl mx-3">-</div>
-        <div className="md:col-span-2 w-1/3">
+        <div className="hidden sm:block text-center text-4xl mx-3">-</div>
+        <div className="md:col-span-2 sm:w-1/3">
           <BalanceCard
             title="Expense"
             amount={expense}
@@ -79,8 +79,8 @@ const BudgetCard = () => {
             bgColor="bg-red"
           />
         </div>
-        <div className="text-center text-4xl mx-3">=</div>
-        <div className="md:col-span-2 w-1/3">
+        <div className="hidden sm:block text-center text-4xl mx-3">=</div>
+        <div className="md:col-span-2 sm:w-1/3">
           <BalanceCard
             title="Balance"
             amount={budgetBalance}

@@ -149,7 +149,7 @@ const Transaction = () => {
   }
 
   return (
-    <section className="p-10">
+    <section className="sm:p-10 p-7">
       <Title title="Transaction" />
       <div className="mt-10">
         <Form {...form}>

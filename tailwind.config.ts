@@ -19,6 +19,10 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        'xxs': '320px',
+        'xs': '480px',
+      },
       colors: {
         mainColor: "#884A39",
         subColor: "#C38154",

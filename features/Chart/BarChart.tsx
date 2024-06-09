@@ -44,16 +44,16 @@ const BarChart = () => {
   }
 
   return (
-    <section className="p-10 bg-white rounded-lg mt-10">
+    <div className="p-10 bg-white rounded-lg mt-10">
       <Title title="Bar Chart" />
       {data.labels.length > 0 ? (
-        <div className="mt-10 h-[400px] w-full flex flex-col items-center">
+        <div className="mt-10 h-[400px]  w-full flex flex-col items-center">
           <Bar data={data} options={{ responsive: true, maintainAspectRatio: false }} />
         </div>
       ) : (
         <p className="mt-5 text-center">No transactions found for the selected month.</p>
       )}
-    </section>
+    </div>
   );
 };
 

@@ -15,11 +15,11 @@ const ChartPage = () => {
       <Separator />
       <section className="px-10 pt-5 pb-14 bg-gray-100">
         <SelectMonth /> {/* Use the SelectMonth component */}
-        <div className="grid grid-cols-2 gap-7">
-          <div>
+        <div className="md:grid md:grid-cols-2 md:gap-7">
+          <div className="mt-10 md:mt-0">
             <PieChart />
           </div>
-          <div>
+          <div className="mt-10 md:mt-0">
             <DonutChart />
           </div>
         </div>

@@ -49,7 +49,7 @@ const BalanceSheet = () => {
   const balance = income - expense; // バランスを計算
 
   return (
-    <section className="p-10">
+    <section className="sm:p-10 p-7">
       <Title title="Balance Sheet" /> {/* タイトルを表示 */}
       <SelectMonth /> {/* Use the SelectMonth component */}
       <BalanceCard

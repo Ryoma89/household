@@ -131,7 +131,7 @@ const MultiBalance = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-5 max-w-screen-md mx-auto">
+          <div className="xs:grid xs:grid-cols-5 xxs:grid xxs:grid-cols-3 grid grid-cols-2 max-w-screen-md mx-auto text-center">
             {currencies.map((currency) => (
               <div key={currency} className="">
                 <input

@@ -12,7 +12,7 @@ import Nav from '../components/layouts/Nav'
 import { Separator } from '@/components/ui/separator'
 
 // ナビゲーション
-const subNavigation = [
+export const subNavigation = [
   {
     name: 'Profile',
     icon: UserCircleIcon,
@@ -43,8 +43,8 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
     <>
     <Nav />
     <Separator />
-    <div className="grid grid-cols-3 gap-3 p-10">
-      <div className="col-span-1 text-sm space-y-1 font-bold flex flex-col">
+    <div className="sm:grid sm:grid-cols-3 sm:gap-3 p-10">
+      <div className="hidden sm:col-span-1 text-sm space-y-1 font-bold sm:flex sm:flex-col">
         {subNavigation.map((item, index) => (
           <Link href={item.href} key={index}>
             <div

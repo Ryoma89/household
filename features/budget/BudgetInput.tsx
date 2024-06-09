@@ -131,7 +131,7 @@ const BudgetInput = () => {
               Add Budget
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="xs:w-4/5 xxs:w-9/12">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 {/* 月の選択 */}
@@ -139,7 +139,7 @@ const BudgetInput = () => {
                   control={form.control}
                   name="month"
                   render={({ field }) => (
-                    <FormItem className="flex items-center space-x-4">
+                    <FormItem className="xs:flex xs:items-center xs:space-x-4">
                       <FormLabel className="min-w-[80px] text-lg text-bold">
                         Month
                       </FormLabel>
@@ -162,7 +162,7 @@ const BudgetInput = () => {
                   )}
                 />
                 {/* Primary Currencyの表示 */}
-                <FormItem className="flex items-center space-x-4">
+                <FormItem className="xs:flex xs:items-center xs:space-x-4">
                   <FormLabel className="min-w-[80px] text-lg text-bold">
                     Currency
                   </FormLabel>
@@ -173,7 +173,7 @@ const BudgetInput = () => {
                   control={form.control}
                   name="amount"
                   render={({ field }) => (
-                    <FormItem className="flex items-center space-x-4">
+                    <FormItem className="xs:flex xs:items-center xs:space-x-4">
                       <FormLabel className="min-w-[80px] text-lg text-bold">
                         Amount
                       </FormLabel>
